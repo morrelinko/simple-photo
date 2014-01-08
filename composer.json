@@ -1,0 +1,13 @@
+{
+    "name": "morrelinko/simplephoto",
+    "description": "Photo uploading and management made easy.",
+    "authors": [
+        {
+            "name": "Morrison Laju",
+            "email": "morrelinko@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    }
+}
