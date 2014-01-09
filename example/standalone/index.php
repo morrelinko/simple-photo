@@ -2,9 +2,14 @@
 
 require_once "../../autoload.php";
 
-// Setup (this must have been done somewhere in your script so that it can be reused throughout your app)
+// (Basic) Setup (this must have been done somewhere in your script so that it can be reused throughout your app)
 $storageManager = new \SimplePhoto\StorageManager();
 $storageManager->add("local", new \SimplePhoto\Storage\LocalStorage(__DIR__, "./files/photos"));
+
+// (Advance) Adding fallback storage for getting default photos that do not exists
+// $storageManager->add(\SimplePhoto\StorageManager::FALLBACK_STORAGE, new \SimplePhoto\Storage\LocalStorage(__DIR__, "./file/defaults"));
+// Or simply with
+$storageManager->setFallback(new \SimplePhoto\Storage\LocalStorage(__DIR__, "./files/defaults"));
 
 $dataStore = new \SimplePhoto\DataStore\SqliteDataStore(array(
     "database" => "sample_app.db"
@@ -23,7 +28,7 @@ $dataStore->getConnection()->exec("
 $simplePhoto = new \SimplePhoto\SimplePhoto($storageManager, $dataStore);
 
 // Upload
-if (isset($_POST["upload"])) {
+if (isset($_POST["upload"]) && isset($_FILES["image"])) {
     $photoId = $simplePhoto->uploadFromPhpFileUpload($_FILES["image"]);
 }
 
@@ -33,6 +38,9 @@ $statement->execute();
 foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
     var_dump($simplePhoto->getPhoto($photo["photo_id"]));
 }
+
+// Photo that does not exists
+var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));
 
 ?>
 

@@ -11,6 +11,11 @@ use SimplePhoto\Source\PhpFileUploadSource;
 class SimplePhoto
 {
     /**
+     * @var array
+     */
+    protected $options = array();
+
+    /**
      * @var StorageManager
      */
     protected $storageManager;
@@ -25,9 +30,15 @@ class SimplePhoto
      *
      * @param StorageManager $storageManager
      * @param DataStoreInterface $dataStore
+     * @param array $options
      */
-    public function __construct(StorageManager $storageManager = null, DataStoreInterface $dataStore = null)
+    public function __construct(StorageManager $storageManager = null, DataStoreInterface $dataStore = null, $options = array())
     {
+        $this->options = array_merge(array(
+            "defaults_root" => null,
+            "defaults_path" => null
+        ), $options);
+
         if ($storageManager != null) {
             $this->setStorageManager($storageManager);
         }
@@ -141,13 +152,33 @@ class SimplePhoto
      */
     public function getPhoto($photoId, array $options = array())
     {
+        $options = array_merge(array(
+            "transform" => array(),
+            "default" => null,
+        ), $options);
+
         $photo = $this->dataStore->getPhoto($photoId);
 
-        if ($photo) {
-            $fs = $this->storageManager->get($photo["storage_name"]);
-            $photo["photo_path"] = $fs->getPhotoPath($photo["file_path"]);
-            $photo["photo_url"] = $fs->getPhotoUrl($photo["file_path"]);
+        if (empty($photo)) {
+            // Could not find photo data
+            if ($options["default"] == null || !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)) {
+                // If default is not set, then no default photo is available
+                return array();
+            }
+
+            // Construct default data
+            $photo = array(
+                "photo_id" => 0,
+                "storage_name" => StorageManager::FALLBACK_STORAGE,
+                "file_path" => $options["default"],
+                "created_at" => date("Y-m-d H:i:s"),
+                "updated_at" => date("Y-m-d H:i:s")
+            );
         }
+
+        $fs = $this->storageManager->get($photo["storage_name"]);
+        $photo["photo_path"] = $fs->getPhotoPath($photo["file_path"]);
+        $photo["photo_url"] = $fs->getPhotoUrl($photo["file_path"]);
 
         return $photo;
     }

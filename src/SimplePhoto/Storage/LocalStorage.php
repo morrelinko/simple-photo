@@ -46,7 +46,7 @@ class LocalStorage implements StorageInterface
         }
 
         $savePath = $this->normalizePath($destination, true);
-        $this->verifyPathExists(dirname($destination), true);
+        $this->verifyPathExists(dirname($this->normalizePath($savePath, true)), true);
 
         if (copy($file, $savePath)) {
             return $this->normalizePath($destination);
@@ -68,7 +68,8 @@ class LocalStorage implements StorageInterface
      */
     public function getPhotoUrl($file)
     {
-        $path = $this->projectRoot . '/' . ltrim(preg_replace('!^' . $this->projectRoot . '/?!', '', $file), '/');
+        $path = FileUtils::normalizePath($this->projectRoot . '/' . $this->savePath . "/" .
+            ltrim(preg_replace('!^' . $this->projectRoot . '/?!', '', $file), '/'));
 
         return rtrim(str_replace($this->projectRoot, RequestUtils::getBaseUrl(), $path), '/');
     }
@@ -139,8 +140,6 @@ class LocalStorage implements StorageInterface
      */
     public function verifyPathExists($path, $createIfNotExists = false)
     {
-        $path = $this->normalizePath($path);
-
         if (!is_dir($path) && !$createIfNotExists) {
             throw new \RuntimeException(sprintf(
                 "Directory: %s not found",

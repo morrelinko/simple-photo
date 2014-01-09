@@ -8,6 +8,8 @@ use SimplePhoto\Utils\ArrayUtils;
  */
 class StorageManager
 {
+    const FALLBACK_STORAGE = "fallback";
+
     protected $default;
 
     /**
@@ -17,11 +19,29 @@ class StorageManager
 
     /**
      * @param $name
-     * @param StorageInterface $filesystem
+     * @param StorageInterface $storage
      */
-    public function add($name, StorageInterface $filesystem)
+    public function add($name, StorageInterface $storage)
     {
-        $this->storageList[$name] = $filesystem;
+        $this->storageList[$name] = $storage;
+    }
+
+    /**
+     * @param StorageInterface $storage
+     */
+    public function setFallback(StorageInterface $storage)
+    {
+        $this->add(self::FALLBACK_STORAGE, $storage);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function has($name)
+    {
+        return isset($this->storageList[$name]);
     }
 
     /**
@@ -32,7 +52,7 @@ class StorageManager
      */
     public function get($name)
     {
-        if (!isset($this->storageList[$name])) {
+        if (!$this->has($name)) {
             throw new \RuntimeException(
                 "Photo storage [{$name}] does not exists."
             );
