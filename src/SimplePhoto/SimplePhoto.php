@@ -4,6 +4,7 @@ use SimplePhoto\DataStore\DataStoreInterface;
 use SimplePhoto\Source\FilePathUploadSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
+use SimplePhoto\Storage\StorageInterface;
 
 /**
  * @author Morrison Laju <morrelinko@gmail.com>
@@ -176,15 +177,73 @@ class SimplePhoto
             );
         }
 
-        $fs = $this->storageManager->get($photo["storage_name"]);
-        $photo["photo_path"] = $fs->getPhotoPath($photo["file_path"]);
-        $photo["photo_url"] = $fs->getPhotoUrl($photo["file_path"]);
+        $storage = $this->storageManager->get($photo["storage_name"]);
+
+        if (!empty($options["transform"])) {
+            // Transformation options available
+            $modifiedFileName = $this->generateModifiedSaveName($photo["file_path"], $options["transform"]);
+            $photo["original_file_path"] = $photo["file_path"];
+
+            if (!$storage->exists($modifiedFileName)) {
+                // Only do image manipulation once
+                // (ie if file does not exists)
+                $modifiedFileName = $this->transformPhoto(
+                    $storage,
+                    $photo["original_file_path"],
+                    $modifiedFileName,
+                    $options["transform"]);
+            }
+
+            // Set the file path to the new modified photo path
+            $photo["file_path"] = $modifiedFileName;
+        }
+
+        $photo["photo_path"] = $storage->getPhotoPath($photo["file_path"]);
+        $photo["photo_url"] = $storage->getPhotoUrl($photo["file_path"]);
 
         return $photo;
     }
 
     public function deletePhoto($photoId)
     {
+    }
+
+    /**
+     * @param StorageInterface $storage
+     * @param string $originalFile
+     * @param string $modifiedFile
+     * @param array $transform
+     *
+     * @return bool
+     */
+    private function transformPhoto(
+        StorageInterface $storage,
+        $originalFile,
+        $modifiedFile,
+        array $transform = array())
+    {
+        if (!$storage->exists($originalFile)) {
+            return $originalFile;
+        }
+
+        // Load image into a temp file
+        $tmpFile = $storage->getPhotoResource($originalFile);
+        $imageTransformer = new ImageTransformer($tmpFile);
+
+        // Start transforming
+        if (isset($transform["size"])) {
+            list($width, $height) = $transform["size"];
+            $imageTransformer->resize($width, $height);
+        }
+
+        $imageTransformer->save($tmpFile);
+        if ($storage->upload($tmpFile, $modifiedFile)) {
+            unlink($tmpFile);
+
+            return $modifiedFile;
+        }
+
+        return false;
     }
 
     /**
@@ -201,7 +260,24 @@ class SimplePhoto
         return $savePath;
     }
 
-    private function generateModifiedSaveName($fileName)
+    /**
+     * @param string $oldName
+     * @param array $transform
+     *
+     * @return string
+     */
+    private function generateModifiedSaveName($oldName, $transform)
     {
+        $newName = null;
+        if (isset($transform["size"])) {
+            $newName .= implode("x", $transform["size"]);
+        }
+
+        // Extract information from original file
+        $directory = dirname($oldName);
+        $originalName = pathinfo($oldName, PATHINFO_FILENAME);
+        $extension = pathinfo($oldName, PATHINFO_EXTENSION);
+
+        return sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension);
     }
 }

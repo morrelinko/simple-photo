@@ -40,8 +40,16 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
 }
 
 // Photo that does not exists
-var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));
+// var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));
 
+// Get a photo Resized
+$resize = $simplePhoto->getPhoto(1, array(
+    "transform" => array(
+        "size" => array(200, 200)
+    )
+));
+
+var_dump($resize);
 ?>
 
 <form method="post" enctype="multipart/form-data">

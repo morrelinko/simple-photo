@@ -49,7 +49,7 @@ class LocalStorage implements StorageInterface
         $this->verifyPathExists(dirname($this->normalizePath($savePath, true)), true);
 
         if (copy($file, $savePath)) {
-            return $this->normalizePath($destination);
+            return $this->normalizePath($destination, false, false);
         }
 
         return false;
@@ -83,6 +83,16 @@ class LocalStorage implements StorageInterface
         copy($this->normalizePath($file, true), $tmpName);
 
         return $tmpName;
+    }
+
+    /**
+     * {@inheritDocs}
+     */
+    public function exists($file)
+    {
+        $file = $this->normalizePath($file, true, true);
+
+        return file_exists($file) && is_file($file);
     }
 
     /**
@@ -157,15 +167,17 @@ class LocalStorage implements StorageInterface
     /**
      * @param $path
      * @param bool $withRoot Set to true to prepend project root to the normalized path
+     * @param $withBasePath
      *
      * @return string
      */
-    public function normalizePath($path, $withRoot = false)
+    public function normalizePath($path, $withRoot = false, $withBasePath = true)
     {
         if (!FileUtils::isAbsolute($path)) {
             // If the path is not an absolute path,
             // prefix with base
-            $path = ($withRoot ? $this->projectRoot . "/" : null) . $this->savePath . "/" . $path;
+            $path = ($withRoot ? $this->projectRoot . "/" : null) .
+                ($withBasePath ? $this->savePath . "/" : null) . $path;
         }
 
         return FileUtils::normalizePath($path);

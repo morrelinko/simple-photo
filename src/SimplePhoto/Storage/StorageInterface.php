@@ -34,4 +34,13 @@ interface StorageInterface
      * @return mixed
      */
     public function getPhotoResource($file);
+
+    /**
+     * Checks if photo exists
+     *
+     * @param string $file
+     *
+     * @return boolean
+     */
+    public function exists($file);
 }
