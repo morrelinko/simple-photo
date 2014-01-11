@@ -147,24 +147,25 @@ class SimplePhoto
     /**
      * @param int $photoId PhotoID
      * @param array $options
+     *      - [String] fallback: Default photo file name to use when photo is not found
      *      - [Array] transform: Customizations to be applied to photo
      *
-     * @return array
+     * @return PhotoResult|false Returns false if photo is not found and no fallback photo setup & defined
      */
-    public function getPhoto($photoId, array $options = array())
+    public function get($photoId, array $options = array())
     {
         $options = array_merge(array(
             "transform" => array(),
-            "default" => null,
+            "fallback" => null,
         ), $options);
 
         $photo = $this->dataStore->getPhoto($photoId);
 
         if (empty($photo)) {
             // Could not find photo data
-            if ($options["default"] == null || !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)) {
+            if ($options["fallback"] == null || !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)) {
                 // If default is not set, then no default photo is available
-                return array();
+                return false;
             }
 
             // Construct default data
@@ -177,31 +178,32 @@ class SimplePhoto
             );
         }
 
+        $photoResult = new PhotoResult($photo);
         $storage = $this->storageManager->get($photo["storage_name"]);
 
         if (!empty($options["transform"])) {
             // Transformation options available
             $modifiedFileName = $this->generateModifiedSaveName($photo["file_path"], $options["transform"]);
-            $photo["original_file_path"] = $photo["file_path"];
+            $photoResult->setOriginalFilePath($photo["file_path"]);
 
             if (!$storage->exists($modifiedFileName)) {
                 // Only do image manipulation once
                 // (ie if file does not exists)
                 $modifiedFileName = $this->transformPhoto(
                     $storage,
-                    $photo["original_file_path"],
+                    $photoResult->originalFilePath(),
                     $modifiedFileName,
                     $options["transform"]);
             }
 
             // Set the file path to the new modified photo path
-            $photo["file_path"] = $modifiedFileName;
+            $photoResult->setFilePath($modifiedFileName);
         }
 
-        $photo["photo_path"] = $storage->getPhotoPath($photo["file_path"]);
-        $photo["photo_url"] = $storage->getPhotoUrl($photo["file_path"]);
+        $photoResult->setPath($storage->getPhotoPath($photoResult->filePath()));
+        $photoResult->setUrl($storage->getPhotoUrl($photoResult->filePath()));
 
-        return $photo;
+        return $photoResult;
     }
 
     public function deletePhoto($photoId)

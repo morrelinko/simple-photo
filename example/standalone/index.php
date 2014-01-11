@@ -20,6 +20,7 @@ $dataStore->getConnection()->exec("
         photo_id INTEGER PRIMARY KEY,
         storage_name TEXT NOT NULL,
         file_path TEXT NOT NULL,
+        file_mime TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -36,21 +37,22 @@ $statement = $dataStore->getConnection()->prepare("SELECT * FROM photos");
 $statement->execute();
 
 foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
-    var_dump($simplePhoto->getPhoto($photo["photo_id"]));
+    var_dump($simplePhoto->get($photo["photo_id"]));
 }
 
 // Photo that does not exists
 // var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));
 
 // Get a photo Resized
-$resize = $simplePhoto->getPhoto(1, array(
+$resize = $simplePhoto->get(1, array(
     "transform" => array(
         "size" => array(200, 200)
     )
 ));
 
-var_dump($resize);
 ?>
+
+<img src="<?php echo $resize->url(); ?>" />
 
 <form method="post" enctype="multipart/form-data">
     <input type="file" name="image">
