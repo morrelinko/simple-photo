@@ -44,15 +44,16 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
 // var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));
 
 // Get a photo Resized
-$resize = $simplePhoto->get(1, array(
+if ($resize = $simplePhoto->get(1, array(
     "transform" => array(
         "size" => array(200, 200)
     )
-));
+))
+) {
+    echo '<img src="' . $resize->url() . '" />';
+}
 
 ?>
-
-<img src="<?php echo $resize->url(); ?>" />
 
 <form method="post" enctype="multipart/form-data">
     <input type="file" name="image">

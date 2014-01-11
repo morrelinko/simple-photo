@@ -21,16 +21,27 @@ class PhotoResult
     protected $originalFilePath;
 
     /**
+     * Photo File Path
+     *
      * @var string
      */
     protected $filePath;
 
     /**
+     * @var
+     */
+    protected $mime;
+
+    /**
+     * Photo Path
+     *
      * @var string
      */
     protected $path;
 
     /**
+     * Photo Url
+     *
      * @var string
      */
     protected $url;
@@ -63,6 +74,7 @@ class PhotoResult
         $this->setId($photoData["photo_id"]);
         $this->setStorage($photoData["storage_name"]);
         $this->setFilePath($photoData["file_path"]);
+        $this->setMime($photoData["file_mime"]);
         $this->setCreatedAt($photoData["created_at"]);
         $this->setUpdatedAt($photoData["created_at"]);
     }
@@ -97,6 +109,14 @@ class PhotoResult
     public function filePath()
     {
         return $this->filePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function mime()
+    {
+        return $this->mime;
     }
 
     /**
@@ -145,6 +165,14 @@ class PhotoResult
     public function setStorage($storage)
     {
         $this->storage = $storage;
+    }
+
+    /**
+     * @param string $mime
+     */
+    public function setMime($mime)
+    {
+        $this->mime = $mime;
     }
 
     /**

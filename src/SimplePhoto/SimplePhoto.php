@@ -137,7 +137,8 @@ class SimplePhoto
             // Persist uploaded photo data
             return $this->dataStore->addPhoto(array(
                 "storageName" => $storageName,
-                "filePath" => $uploadPath
+                "filePath" => $uploadPath,
+                "fileMime" => $this->getFileMime($photoSource->getFile()),
             ));
         }
 
@@ -173,6 +174,7 @@ class SimplePhoto
                 "photo_id" => 0,
                 "storage_name" => StorageManager::FALLBACK_STORAGE,
                 "file_path" => $options["default"],
+                "file_mime" => null,
                 "created_at" => date("Y-m-d H:i:s"),
                 "updated_at" => date("Y-m-d H:i:s")
             );
@@ -281,5 +283,18 @@ class SimplePhoto
         $extension = pathinfo($oldName, PATHINFO_EXTENSION);
 
         return sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension);
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return mixed|null
+     */
+    private function getFileMime($file)
+    {
+        $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($fileInfo, $file);
+
+        return !empty($mime) ? $mime : null;
     }
 }
