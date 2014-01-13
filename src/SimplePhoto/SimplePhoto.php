@@ -128,9 +128,20 @@ class SimplePhoto
         $storage = $this->getStorageManager()->get($storageName);
 
         if ($transform) {
-            $uploadPath = null;
+            // If we are to perform photo transformation during upload,
+            // transformation specs are applied and the new photo is saved
+            // as the original image
+            $uploadPath = $this->transformPhoto(
+                $storage,
+                $photoSource->getFile(),
+                $saveName,
+                $transform);
         } else {
-            $uploadPath = $storage->upload($photoSource->getFile(), $saveName, $options);
+            // Just upload as is
+            $uploadPath = $storage->upload(
+                $photoSource->getFile(),
+                $saveName,
+                $options);
         }
 
         if ($uploadPath && $this->dataStore != null) {
@@ -218,7 +229,7 @@ class SimplePhoto
      * @param string $modifiedFile
      * @param array $transform
      *
-     * @return bool
+     * @return string|bool Modified file if successful or false otherwise
      */
     private function transformPhoto(
         StorageInterface $storage,

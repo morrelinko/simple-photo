@@ -30,7 +30,13 @@ $simplePhoto = new \SimplePhoto\SimplePhoto($storageManager, $dataStore);
 
 // Upload
 if (isset($_POST["upload"]) && isset($_FILES["image"])) {
-    $photoId = $simplePhoto->uploadFromPhpFileUpload($_FILES["image"]);
+    $photoId = $simplePhoto->uploadFromPhpFileUpload($_FILES["image"], array(
+        "transform" => array(
+            "size" => array(100, 100)
+        )
+    ));
+
+    echo '<img src="' . $simplePhoto->get($photoId)->url() . '" />';
 }
 
 $statement = $dataStore->getConnection()->prepare("SELECT * FROM photos");
@@ -44,6 +50,8 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
 // var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));
 
 // Get a photo Resized
+
+/**
 if ($resize = $simplePhoto->get(1, array(
     "transform" => array(
         "size" => array(200, 200)
@@ -52,7 +60,7 @@ if ($resize = $simplePhoto->get(1, array(
 ) {
     echo '<img src="' . $resize->url() . '" />';
 }
-
+/**/
 ?>
 
 <form method="post" enctype="multipart/form-data">
