@@ -19,6 +19,8 @@ $dataStore->getConnection()->exec("
     CREATE TABLE IF NOT EXISTS photos (
         photo_id INTEGER PRIMARY KEY,
         storage_name TEXT NOT NULL,
+        file_name TEXT NOT NULL,
+        file_extension TEXT NOT NULL,
         file_path TEXT NOT NULL,
         file_mime TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -46,7 +48,8 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
     var_dump($simplePhoto->get($photo["photo_id"]));
 }
 
-var_dump($simplePhoto->delete(3));
+// Delete Photo
+// var_dump($simplePhoto->delete(3));
 
 // Photo that does not exists
 // var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));

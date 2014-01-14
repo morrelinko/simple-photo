@@ -16,6 +16,8 @@ class PhotoResult
     protected $storage;
 
     /**
+     * Original photo path if modified
+     *
      * @var string
      */
     protected $originalFilePath;
@@ -26,6 +28,18 @@ class PhotoResult
      * @var string
      */
     protected $filePath;
+
+    /**
+     * Photo File name
+     *
+     * @var string
+     */
+    protected $fileName;
+
+    /**
+     * @var string
+     */
+    protected $fileExtension;
 
     /**
      * @var
@@ -65,13 +79,17 @@ class PhotoResult
     {
         $photoData = array_merge(array(
             "photo_id" => null,
+            "file_name" => null,
             "file_path" => null,
+            "file_extension" => null,
             "storage_name" => null,
             "created_at" => null,
             "updated_at" => null
         ), $photoData);
 
         $this->setId($photoData["photo_id"]);
+        $this->setFilename($photoData["file_name"]);
+        $this->setFileExtension($photoData["file_extension"]);
         $this->setStorage($photoData["storage_name"]);
         $this->setFilePath($photoData["file_path"]);
         $this->setMime($photoData["file_mime"]);
@@ -85,6 +103,22 @@ class PhotoResult
     public function id()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function fileName()
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function fileExtension()
+    {
+        return $this->fileExtension;
     }
 
     /**
@@ -157,6 +191,22 @@ class PhotoResult
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @param string $fileName
+     */
+    public function setFilename($fileName)
+    {
+        $this->fileName = $fileName;
+    }
+
+    /**
+     * @param string $fileExtension
+     */
+    public function setFileExtension($fileExtension)
+    {
+        $this->fileExtension = $fileExtension;
     }
 
     /**

@@ -52,10 +52,10 @@ abstract class PdoConnection
     {
         $statement = $this->db->prepare(sprintf("
             INSERT INTO %s (
-                storage_name, file_path, file_mime
+                storage_name, file_name, file_extension, file_path, file_mime
             )
             VALUES (
-                :storageName, :filePath, :fileMime
+                :storageName, :fileName, :fileExtension, :filePath, :fileMime
             )
         ", $this->options["photo_table"]));
 
@@ -70,7 +70,9 @@ abstract class PdoConnection
     public function getPhoto($photoId)
     {
         $statement = $this->db->prepare(sprintf("
-            SELECT photo_id, storage_name, file_path, file_mime, created_at, updated_at
+            SELECT
+                photo_id, storage_name, file_name, file_path,
+                file_extension, file_mime, created_at, updated_at
             FROM %s
             WHERE photo_id = :photoId
         ", $this->options["photo_table"]));

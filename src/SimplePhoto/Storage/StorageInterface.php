@@ -17,6 +17,8 @@ interface StorageInterface
     /**
      * Delete photo file
      *
+     * @param string $file
+     *
      * @return boolean
      */
     public function deletePhoto($file);

@@ -149,6 +149,8 @@ class SimplePhoto
             return $this->dataStore->addPhoto(array(
                 "storageName" => $storageName,
                 "filePath" => $uploadPath,
+                "fileName" => $photoSource->getName(),
+                "fileExtension" => pathinfo($photoSource->getName(), PATHINFO_EXTENSION),
                 "fileMime" => $this->getFileMime($photoSource->getFile()),
             ));
         }
@@ -184,6 +186,7 @@ class SimplePhoto
             $photo = array(
                 "photo_id" => 0,
                 "storage_name" => StorageManager::FALLBACK_STORAGE,
+                "file_name" => pathinfo($options["default"], PATHINFO_FILENAME),
                 "file_path" => $options["default"],
                 "file_mime" => null,
                 "created_at" => date("Y-m-d H:i:s"),
