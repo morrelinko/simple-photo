@@ -46,21 +46,23 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
     var_dump($simplePhoto->get($photo["photo_id"]));
 }
 
+var_dump($simplePhoto->delete(3));
+
 // Photo that does not exists
 // var_dump($simplePhoto->getPhoto(1000, array("default" => "my_photo.png")));
 
 // Get a photo Resized
 
 /**
-if ($resize = $simplePhoto->get(1, array(
-    "transform" => array(
-        "size" => array(200, 200)
-    )
-))
-) {
-    echo '<img src="' . $resize->url() . '" />';
-}
-/**/
+ * if ($resize = $simplePhoto->get(1, array(
+ * "transform" => array(
+ * "size" => array(200, 200)
+ * )
+ * ))
+ * ) {
+ * echo '<img src="' . $resize->url() . '" />';
+ * }
+ * /**/
 ?>
 
 <form method="post" enctype="multipart/form-data">

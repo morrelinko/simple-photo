@@ -219,8 +219,31 @@ class SimplePhoto
         return $photoResult;
     }
 
-    public function deletePhoto($photoId)
+    /**
+     * Delete photo
+     *
+     * @param int $photoId
+     *
+     * @return bool
+     */
+    public function delete($photoId)
     {
+        $photo = $this->dataStore->getPhoto($photoId);
+
+        if (!$photo) {
+            // Photo does not exists, lets assume its deleted
+            return true;
+        }
+
+        $storage = $this->storageManager->get($photo["storage_name"]);
+
+        if ($this->dataStore->deletePhoto($photoId)) {
+            if ($storage->deletePhoto($photo)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

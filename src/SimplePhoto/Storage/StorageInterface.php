@@ -15,6 +15,13 @@ interface StorageInterface
     public function upload($source, $name, array $options = array());
 
     /**
+     * Delete photo file
+     *
+     * @return boolean
+     */
+    public function deletePhoto($file);
+
+    /**
      * @param string $file
      *
      * @return mixed

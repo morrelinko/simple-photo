@@ -58,6 +58,25 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritDocs}
      */
+    public function deletePhoto($file)
+    {
+        if (!$this->exists($file)) {
+            // If the file does not exists,
+            // it is considered deleted
+            return true;
+        }
+
+        // Delete from file system
+        if (unlink($this->normalizePath($file, true, true))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * {@inheritDocs}
+     */
     public function getPhotoPath($file)
     {
         return $this->normalizePath($file, true);
