@@ -1,6 +1,7 @@
 {
     "name": "morrelinko/simple-photo",
     "description": "Photo uploading and management made easy.",
+    "license": "MIT",
     "authors": [
         {
             "name": "Laju Morrison",
