@@ -87,7 +87,7 @@ class StorageManager
     public function getDefault()
     {
         if ($this->default != null) {
-            return $this->get($this->default);
+            return $this->default;
         }
 
         return ArrayUtils::first(array_keys($this->storageList));
