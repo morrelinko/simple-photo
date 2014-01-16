@@ -62,6 +62,16 @@ class StorageManager
     }
 
     /**
+     * Get all defined storage
+     *
+     * @return Storage\StorageInterface[]
+     */
+    public function getAll()
+    {
+        return $this->storageList;
+    }
+
+    /**
      * @param $name
      */
     public function remove($name)
