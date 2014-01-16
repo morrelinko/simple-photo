@@ -2,34 +2,42 @@ SimplePhoto
 ---------------------
 Photo uploading and management made easy
 
+[![Build Status](https://travis-ci.org/morrelinko/simple-photo.png?branch=master)](https://travis-ci.org/morrelinko/simple-photo)
+
 ## Uploading Photo
-	<?php
-	$photoId = $simplePhoto->uploadFromPhpFileUpload($_FILES["image"]);
-	// Or
-	$photoId = $simplePhoto->uploadFromFilePath("/path/to/photo.png");
+
+```php
+$photoId = $simplePhoto->uploadFromPhpFileUpload($_FILES["image"]);
+// Or
+$photoId = $simplePhoto->uploadFromFilePath("/path/to/photo.png");
+```
 
 ## Retrieving Photo
-	<?php
+
+```php
 	$simplePhoto->getPhoto($photoId);
+```
 
 ## Setup
 
-	<?php
+```php
 	// Coming soon
+```
 
 ## Retrieving photos (+Transformation)
 
 If you want to get a re-sized photo, use the "transform" options of the second argument
 
-	<?php
+```php
 	$photo = $simplePhoto->get($photoId, array(
 		"transform" => array(
 			"size" => array(200, 200)
 		)
 	));
+```
 
 ## Licence
 
-Faker is released under the MIT Licence. See the bundled LICENSE file for details.
+The MIT License (MIT). Please see [License File](https://github.com/morrelinko/simple-photo/blob/master/LICENSE) for more information.
 
-== Supported by http://contactlyapp.com ==
+Supported by http://contactlyapp.com
