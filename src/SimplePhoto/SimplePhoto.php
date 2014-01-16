@@ -1,7 +1,7 @@
 <?php namespace SimplePhoto;
 
 use SimplePhoto\DataStore\DataStoreInterface;
-use SimplePhoto\Source\FilePathUploadSource;
+use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
@@ -101,7 +101,7 @@ class SimplePhoto
      */
     public function uploadFromFilePath($photoData, array $options = array())
     {
-        return $this->uploadFrom($photoData, $options, new FilePathUploadSource());
+        return $this->uploadFrom($photoData, $options, new FilePathSource());
     }
 
     /**

@@ -3,7 +3,7 @@
 /**
  * @author Morrison Laju <morrelinko@gmail.com>
  */
-class FilePathUploadSource implements PhotoSourceInterface
+class FilePathSource implements PhotoSourceInterface
 {
     /**
      * @var string
