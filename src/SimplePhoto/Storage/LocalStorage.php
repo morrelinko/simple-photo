@@ -1,7 +1,8 @@
 <?php namespace SimplePhoto\Storage;
 
+use SimplePhoto\Toolbox\BaseUrlInterface;
+use SimplePhoto\Toolbox\HttpBaseUrl;
 use SimplePhoto\Utils\FileUtils;
-use SimplePhoto\Utils\RequestUtils;
 use SimplePhoto\Utils\TextUtils;
 
 /**
@@ -85,12 +86,17 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritDocs}
      */
-    public function getPhotoUrl($file)
+    public function getPhotoUrl($file, BaseUrlInterface $baseUrlImpl = null)
     {
+        if ($baseUrlImpl == null) {
+            $baseUrlImpl = new HttpBaseUrl();
+        }
+
+        $baseUrl = $baseUrlImpl->getBaseUrl();
         $path = FileUtils::normalizePath($this->projectRoot . '/' . $this->savePath . "/" .
             ltrim(preg_replace('!^' . $this->projectRoot . '/?!', '', $file), '/'));
 
-        return rtrim(str_replace($this->projectRoot, RequestUtils::getBaseUrl(), $path), '/');
+        return rtrim(str_replace($this->projectRoot, $baseUrl, $path), '/');
     }
 
     /**
@@ -128,6 +134,14 @@ class LocalStorage implements StorageInterface
     public function setSavePath($savePath)
     {
         $this->savePath = $savePath;
+    }
+
+    /**
+     * Gets the full path for saving photo
+     */
+    public function getPath()
+    {
+        return $this->normalizePath(null, true, true);
     }
 
     /**

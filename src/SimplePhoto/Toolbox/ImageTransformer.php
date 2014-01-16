@@ -1,4 +1,4 @@
-<?php namespace SimplePhoto;
+<?php namespace SimplePhoto\Toolbox;
 
 use SimplePhoto\Utils\FileUtils;
 
