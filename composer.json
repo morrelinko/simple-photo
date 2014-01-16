@@ -8,7 +8,15 @@
             "email": "morrelinko@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-0": {
+            "SimplePhoto": ["src", "tests"]
+        }
+    },
     "require": {
         "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "dev-master@dev"
     }
 }
