@@ -202,6 +202,7 @@ class SimplePhoto
             // Transformation options available
             $modifiedFileName = $this->generateModifiedSaveName($photo["file_path"], $options["transform"]);
             $photoResult->setOriginalFilePath($photo["file_path"]);
+            $photoResult->setOriginalPath($storage->getPhotoPath($photo["file_path"]));
 
             if (!$storage->exists($modifiedFileName)) {
                 // Only do image manipulation once

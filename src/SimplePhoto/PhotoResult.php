@@ -47,6 +47,11 @@ class PhotoResult
     protected $mime;
 
     /**
+     * @var string
+     */
+    protected $originalPath;
+
+    /**
      * Photo Path
      *
      * @var string
@@ -156,6 +161,14 @@ class PhotoResult
     /**
      * @return string
      */
+    public function originalPath()
+    {
+        return $this->originalPath;
+    }
+
+    /**
+     * @return string
+     */
     public function path()
     {
         return $this->path;
@@ -223,6 +236,14 @@ class PhotoResult
     public function setMime($mime)
     {
         $this->mime = $mime;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setOriginalPath($path)
+    {
+        $this->originalPath = $path;
     }
 
     /**
