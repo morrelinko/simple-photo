@@ -6,6 +6,11 @@
 interface DataStoreInterface
 {
     /**
+     * @return mixed
+     */
+    public function getConnection();
+
+    /**
      * @param array $values
      *      - [String] storageName
      *      - [String] filePath
