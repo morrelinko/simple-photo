@@ -5,6 +5,7 @@ use SimplePhoto\Source\FilePathUploadSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
+use SimplePhoto\Toolbox\ImageTransformer;
 
 /**
  * @author Morrison Laju <morrelinko@gmail.com>
