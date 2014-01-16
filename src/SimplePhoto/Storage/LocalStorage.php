@@ -14,16 +14,20 @@ class LocalStorage implements StorageInterface
 
     protected $savePath;
 
+    protected $baseUrlImpl;
+
     /**
      * Constructor
      *
      * @param string $projectRoot Root of your project
      * @param null|string $savePath
+     * @param \SimplePhoto\Toolbox\BaseUrlInterface $baseUrlImpl
      */
-    public function __construct($projectRoot, $savePath)
+    public function __construct($projectRoot, $savePath, BaseUrlInterface $baseUrlImpl = null)
     {
         $this->projectRoot = FileUtils::normalizePath($projectRoot);
         $this->savePath = $savePath;
+        $this->baseUrlImpl = $baseUrlImpl;
     }
 
     /**
@@ -86,17 +90,16 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritDocs}
      */
-    public function getPhotoUrl($file, BaseUrlInterface $baseUrlImpl = null)
+    public function getPhotoUrl($file)
     {
-        if ($baseUrlImpl == null) {
-            $baseUrlImpl = new HttpBaseUrl();
+        if ($this->baseUrlImpl == null) {
+            $this->baseUrlImpl = new HttpBaseUrl();
         }
 
-        $baseUrl = $baseUrlImpl->getBaseUrl();
         $path = FileUtils::normalizePath($this->projectRoot . '/' . $this->savePath . "/" .
             ltrim(preg_replace('!^' . $this->projectRoot . '/?!', '', $file), '/'));
 
-        return rtrim(str_replace($this->projectRoot, $baseUrl, $path), '/');
+        return rtrim(str_replace($this->projectRoot, $this->baseUrlImpl->getBaseUrl(), $path), '/');
     }
 
     /**
