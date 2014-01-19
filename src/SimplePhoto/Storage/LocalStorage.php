@@ -84,7 +84,7 @@ class LocalStorage implements StorageInterface
      */
     public function getPhotoPath($file)
     {
-        return $this->normalizePath($file, true);
+        return $this->normalizePath($file, true, true);
     }
 
     /**
@@ -209,13 +209,12 @@ class LocalStorage implements StorageInterface
      */
     public function normalizePath($path, $withRoot = false, $withBasePath = true)
     {
+        $dir = null;
         if (!FileUtils::isAbsolute($path)) {
-            // If the path is not an absolute path,
-            // prefix with base
-            $path = ($withRoot ? $this->projectRoot . "/" : null) .
-                ($withBasePath ? $this->savePath . "/" : null) . $path;
+            $dir = ($withRoot ? $this->projectRoot . "/" : null) .
+                ($withBasePath ? $this->savePath . "/" : null);
         }
 
-        return FileUtils::normalizePath($path);
+        return FileUtils::normalizePath($dir . $path);
     }
 }

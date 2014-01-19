@@ -17,29 +17,27 @@ class FileUtils
      */
     public static function normalizePath($path)
     {
-        $path = str_replace('\\', '/', $path);
-        $parts = array_filter(explode('/', $path), 'strlen');
-        $path = array();
+        $path = str_replace("\\", "/", $path);
+        $parts = array_filter(explode("/", $path), "strlen");
+        $isWin = strtoupper(substr(PHP_OS, 0, 3)) === "WIN";
+        $realPath = (self::isAbsolute($path) && !$isWin) ? "/" : "";
+        $fixedParts = array();
 
         foreach ($parts as $part) {
-            if ($part == '.') {
+            if ($part == ".") {
                 continue;
             }
 
-            if ($part == '..') {
-                array_pop($path);
+            if ($part == "..") {
+                array_pop($fixedParts);
             } else {
-                $path[] = $part;
+                $fixedParts[] = $part;
             }
         }
 
-        $path = implode('/', $path);
+        $realPath .= implode("/", $fixedParts);
 
-        if (substr(php_uname(), 0, 7) != 'Windows') {
-            $path = '/' . $path;
-        }
-
-        return $path;
+        return $realPath;
     }
 
     /**
@@ -52,8 +50,8 @@ class FileUtils
     public static function isAbsolute($path)
     {
         return ((isset($path[0])
-                ? ($path[0] == '/'
-                    || (ctype_alpha($path[0]) && ($path[1] == ':')))
+                ? ($path[0] == "/"
+                    || (ctype_alpha($path[0]) && ($path[1] == ":")))
                 : '')
             || (parse_url($path, PHP_URL_SCHEME) === true))
             ? true

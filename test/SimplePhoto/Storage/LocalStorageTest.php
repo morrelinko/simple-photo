@@ -50,13 +50,13 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     {
         $photoUrl = self::BASE_URL . "/" . $this->savePath . "/" . self::TEST_UPLOAD_FILE;
         $photoPath = FileUtils::normalizePath(
-            $this->projectPath . "/" . $this->savePath . "/" . self::TEST_UPLOAD_FILE);
+                $this->projectPath . "/" . $this->savePath) . "/" . self::TEST_UPLOAD_FILE;
 
         // Test getPhotoUrl()
-        $this->assertSame($this->storage->getPhotoUrl(self::TEST_UPLOAD_FILE), $photoUrl);
+        $this->assertSame($photoUrl, $this->storage->getPhotoUrl(self::TEST_UPLOAD_FILE));
 
         // Test getPhotoPath()
-        $this->assertSame($this->storage->getPhotoPath(self::TEST_UPLOAD_FILE), $photoPath);
+        $this->assertSame($photoPath, $this->storage->getPhotoPath(self::TEST_UPLOAD_FILE));
     }
 
     public function testUploadFile()
@@ -65,6 +65,6 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $this->storage->upload($file, self::TEST_UPLOAD_FILE);
 
         $this->assertFileExists(FileUtils::normalizePath(
-            $this->projectPath . "/" . $this->savePath . "/" . self::TEST_UPLOAD_FILE));
+                $this->projectPath . "/" . $this->savePath) . "/" . self::TEST_UPLOAD_FILE);
     }
 }
