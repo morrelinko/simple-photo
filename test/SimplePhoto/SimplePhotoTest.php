@@ -41,6 +41,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->simplePhoto = null;
+        \Mockery::close();
     }
 
     public function testStorageManager()
