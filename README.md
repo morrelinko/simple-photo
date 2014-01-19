@@ -15,13 +15,40 @@ $photoId = $simplePhoto->uploadFromFilePath("/path/to/photo.png");
 ## Retrieving Photo
 
 ```php
-	$simplePhoto->getPhoto($photoId);
+$photo = $simplePhoto->get($photoId);
+
+$photo->url();
+$photo->path();
+$photo->fileMime();
+$photo->fileExtension();
 ```
 
 ## Setup
 
+SimplePhoto requires a...
+1. Storage Manager: For Storing & Managing registered storage adapters.
+2. Data Store: (Such as database) For persisting photo data.
+
 ```php
-	// Coming soon
+use SimplePhoto\Storage\LocalStorage;
+use SimplePhoto\StorageManager;
+use SimplePhoto\DataStore\SqliteDataStore;
+use SimplePhoto\SimplePhoto;
+
+// Create a local storage adapter
+$localStorage = new LocalStorage('/path/to/project/root/', 'photos');
+
+// Create a storage manager
+$storageManager = new StorageManager();
+
+// Adds one or more registered storage adapters
+$storageManager->add('local', $localStorage);
+
+// Create Data Store
+$dataStore = new SqliteDataStore(['database' => 'photo_app.db']);
+
+// Create Our Simple Photo Object
+$simplePhoto = new SimplePhoto($storageManager, $dataStore);
 ```
 
 ## Retrieving photos (+Transformation)
@@ -29,12 +56,18 @@ $photoId = $simplePhoto->uploadFromFilePath("/path/to/photo.png");
 If you want to get a re-sized photo, use the "transform" options of the second argument
 
 ```php
-	$photo = $simplePhoto->get($photoId, array(
-		"transform" => array(
-			"size" => array(200, 200)
-		)
-	));
+$photo = $simplePhoto->get($photoId, [
+	"transform" => [
+		"size" => [200, 200]
+	]
+]);
 ```
+
+Other transformation options will be made available...
+
+## Credits
+
+This code is principally developed and maintained by [Laju Morrison] (https://github.com/morrelinko)
 
 ## Licence
 

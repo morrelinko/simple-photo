@@ -48,11 +48,6 @@ class SimplePhoto
      */
     public function __construct(StorageManager $storageManager = null, DataStoreInterface $dataStore = null, $options = array())
     {
-        $this->options = array_merge(array(
-            'defaults_root' => null,
-            'defaults_path' => null
-        ), $options);
-
         if ($storageManager != null) {
             $this->setStorageManager($storageManager);
         }
@@ -98,6 +93,8 @@ class SimplePhoto
      * @param mixed $photoData
      * @param array $options
      *
+     * @see SimplePhoto::uploadFrom()
+     *
      * @return int
      */
     public function uploadFromPhpFileUpload($photoData, array $options = array())
@@ -108,6 +105,8 @@ class SimplePhoto
     /**
      * @param mixed $photoData
      * @param array $options
+     *
+     * @see SimplePhoto::uploadFrom()
      *
      * @return int
      */
