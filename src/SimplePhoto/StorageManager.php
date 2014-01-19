@@ -1,14 +1,25 @@
-<?php namespace SimplePhoto;
+<?php
+
+/*
+ * This file is part of the SimplePhoto package.
+ *
+ * (c) Laju Morrison <morrelinko@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SimplePhoto;
 
 use SimplePhoto\Storage\StorageInterface;
 use SimplePhoto\Utils\ArrayUtils;
 
 /**
- * @author Morrison Laju <morrelinko@gmail.com>
+ * @author Laju Morrison <morrelinko@gmail.com>
  */
 class StorageManager
 {
-    const FALLBACK_STORAGE = "fallback";
+    const FALLBACK_STORAGE = 'fallback';
 
     protected $default;
 
@@ -54,7 +65,7 @@ class StorageManager
     {
         if (!$this->has($name)) {
             throw new \RuntimeException(
-                "Photo storage [{$name}] does not exists."
+                'Photo storage [{$name}] does not exists.'
             );
         }
 
@@ -100,4 +111,4 @@ class StorageManager
     {
         $this->default = $name;
     }
-} 
+}

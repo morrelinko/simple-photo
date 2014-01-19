@@ -1,4 +1,15 @@
-<?php namespace SimplePhoto\Storage;
+<?php
+
+/*
+ * This file is part of the SimplePhoto package.
+ *
+ * (c) Laju Morrison <morrelinko@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SimplePhoto\Storage;
 
 use SimplePhoto\Toolbox\BaseUrlInterface;
 use SimplePhoto\Toolbox\HttpBaseUrl;
@@ -6,14 +17,23 @@ use SimplePhoto\Utils\FileUtils;
 use SimplePhoto\Utils\TextUtils;
 
 /**
- * @author Morrison Laju <morrelinko@gmail.com>
+ * @author Laju Morrison <morrelinko@gmail.com>
  */
 class LocalStorage implements StorageInterface
 {
+    /**
+     * @var string
+     */
     protected $projectRoot;
 
+    /**
+     * @var null|string
+     */
     protected $savePath;
 
+    /**
+     * @var \SimplePhoto\Toolbox\BaseUrlInterface
+     */
     protected $baseUrlImpl;
 
     /**
@@ -37,13 +57,13 @@ class LocalStorage implements StorageInterface
     {
         if (!is_file($file)) {
             throw new \RuntimeException(
-                "Unable to upload; File [{$file}] does not exists."
+                'Unable to upload; File [{$file}] does not exists.'
             );
         }
 
         $fileName = basename($file);
         if ($destination) {
-            if (TextUtils::endsWith($destination, "/")) {
+            if (TextUtils::endsWith($destination, '/')) {
                 $destination = $destination . $fileName;
             }
         } else {
@@ -96,7 +116,7 @@ class LocalStorage implements StorageInterface
             $this->baseUrlImpl = new HttpBaseUrl();
         }
 
-        $path = FileUtils::normalizePath($this->projectRoot . '/' . $this->savePath . "/" .
+        $path = FileUtils::normalizePath($this->projectRoot . '/' . $this->savePath . '/' .
             ltrim(preg_replace('!^' . $this->projectRoot . '/?!', '', $file), '/'));
 
         return rtrim(str_replace($this->projectRoot, $this->baseUrlImpl->getBaseUrl(), $path), '/');
@@ -141,6 +161,8 @@ class LocalStorage implements StorageInterface
 
     /**
      * Gets the full path for saving photo
+     *
+     * @return string
      */
     public function getPath()
     {
@@ -188,7 +210,7 @@ class LocalStorage implements StorageInterface
     {
         if (!is_dir($path) && !$createIfNotExists) {
             throw new \RuntimeException(sprintf(
-                "Directory: %s not found",
+                'Directory: %s not found',
                 $path
             ));
         }
@@ -211,8 +233,8 @@ class LocalStorage implements StorageInterface
     {
         $dir = null;
         if (!FileUtils::isAbsolute($path)) {
-            $dir = ($withRoot ? $this->projectRoot . "/" : null) .
-                ($withBasePath ? $this->savePath . "/" : null);
+            $dir = ($withRoot ? $this->projectRoot . '/' : null) .
+                ($withBasePath ? $this->savePath . '/' : null);
         }
 
         return FileUtils::normalizePath($dir . $path);

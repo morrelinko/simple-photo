@@ -1,7 +1,18 @@
-<?php namespace SimplePhoto\Toolbox;
+<?php
+
+/*
+ * This file is part of the SimplePhoto package.
+ *
+ * (c) Laju Morrison <morrelinko@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SimplePhoto\Toolbox;
 
 /**
- * @author Morrison Laju <morrelinko@gmail.com>
+ * @author Laju Morrison <morrelinko@gmail.com>
  */
 class Color
 {
@@ -103,7 +114,7 @@ class Color
      */
     public function lighten($percentage)
     {
-        $steps = (int)floor(2.55 * $percentage);
+        $steps = (int) floor(2.55 * $percentage);
 
         $color = new Color(array(
             $red = max(0, min(255, $this->red + $steps)),
@@ -124,7 +135,7 @@ class Color
      */
     public function darken($percentage)
     {
-        $steps = (int)floor(2.55 * $percentage);
+        $steps = (int) floor(2.55 * $percentage);
 
         $color = new Color(array(
             $red = max(0, min(255, $this->red - $steps)),
@@ -150,13 +161,20 @@ class Color
 
     /**
      * Gets the color in RGB Format
+     *
+     * @throws \LogicException
      */
     public function toRgb()
     {
+        throw new \LogicException('Color.toRgb() not implemented.');
     }
 
+    /**
+     * @throws \LogicException
+     */
     public function toHsl()
     {
+        throw new \LogicException('Color.toHsl() not implemented.');
     }
 
     public function createFromString($value)
@@ -177,7 +195,7 @@ class Color
                 break;
             default:
                 throw new \LogicException(sprintf(
-                    "Invalid Hex value [%s] in %s", $value, __METHOD__));
+                    'Invalid Hex value [%s] in %s', $value, __METHOD__));
                 break;
         }
 

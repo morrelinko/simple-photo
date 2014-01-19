@@ -1,7 +1,18 @@
-<?php namespace SimplePhoto\Utils;
+<?php
+
+/*
+ * This file is part of the SimplePhoto package.
+ *
+ * (c) Laju Morrison <morrelinko@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SimplePhoto\Utils;
 
 /**
- * @author Morrison Laju <morrelinko@gmail.com>
+ * @author Laju Morrison <morrelinko@gmail.com>
  */
 class FileUtils
 {
@@ -17,25 +28,25 @@ class FileUtils
      */
     public static function normalizePath($path)
     {
-        $path = str_replace("\\", "/", $path);
-        $parts = array_filter(explode("/", $path), "strlen");
-        $isWin = strtoupper(substr(PHP_OS, 0, 3)) === "WIN";
-        $realPath = (self::isAbsolute($path) && !$isWin) ? "/" : "";
+        $path = str_replace('\\', '/', $path);
+        $parts = array_filter(explode('/', $path), 'strlen');
+        $isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+        $realPath = (self::isAbsolute($path) && !$isWin) ? '/' : '';
         $fixedParts = array();
 
         foreach ($parts as $part) {
-            if ($part == ".") {
+            if ($part == '.') {
                 continue;
             }
 
-            if ($part == "..") {
+            if ($part == '..') {
                 array_pop($fixedParts);
             } else {
                 $fixedParts[] = $part;
             }
         }
 
-        $realPath .= implode("/", $fixedParts);
+        $realPath .= implode('/', $fixedParts);
 
         return $realPath;
     }
@@ -50,11 +61,11 @@ class FileUtils
     public static function isAbsolute($path)
     {
         return ((isset($path[0])
-                ? ($path[0] == "/"
-                    || (ctype_alpha($path[0]) && ($path[1] == ":")))
+                ? ($path[0] == '/'
+                    || (ctype_alpha($path[0]) && ($path[1] == ':')))
                 : '')
             || (parse_url($path, PHP_URL_SCHEME) === true))
             ? true
             : false;
     }
-} 
+}

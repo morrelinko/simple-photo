@@ -1,9 +1,20 @@
-<?php namespace SimplePhoto\Toolbox;
+<?php
+
+/*
+ * This file is part of the SimplePhoto package.
+ *
+ * (c) Laju Morrison <morrelinko@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SimplePhoto\Toolbox;
 
 use SimplePhoto\Utils\FileUtils;
 
 /**
- * @author Morrison Laju <morrelinko@gmail.com>
+ * @author Laju Morrison <morrelinko@gmail.com>
  */
 class ImageTransformer
 {
@@ -20,11 +31,12 @@ class ImageTransformer
     /**
      * Constructor
      *
-     * @param $file
+     * @param string $file
+     * @param Image $image Image Model
      *
      * @throws \RuntimeException
      */
-    public function __construct($file)
+    public function __construct($file, Image $image)
     {
         set_error_handler(function ($code, $message, $file, $line) {
             // Silence
@@ -32,18 +44,17 @@ class ImageTransformer
 
         $info = getimagesize(FileUtils::normalizePath($file));
 
-        if (!isset($info["mime"])) {
+        if (!isset($info['mime'])) {
             throw new \RuntimeException(sprintf(
-                "Could not load image [%s];", $file
+                'Could not load image [%s];', $file
             ));
         }
 
-        $image = new Image();
         $image->setFile($file);
         $image->setWidth($info[0]);
         $image->setHeight($info[1]);
         $image->setType($info[2]);
-        $image->setMime($info["mime"]);
+        $image->setMime($info['mime']);
 
         $this->createResource($image);
         // $this->originalImage =
@@ -65,7 +76,7 @@ class ImageTransformer
             $background = new Color(0xFF000000);
         }
 
-        $opacity = (int)ceil($background->alpha() * 0.49803921568627);
+        $opacity = (int) ceil($background->alpha() * 0.49803921568627);
 
         $resource = imagecreatetruecolor($width, $height);
         $color = imagecolorallocatealpha(
@@ -101,7 +112,7 @@ class ImageTransformer
                 break;
             default:
                 throw new \RuntimeException(
-                    "Invalid image type ({$image->getType()});");
+                    'Invalid image type ({$image->getType()});');
                 break;
         }
     }

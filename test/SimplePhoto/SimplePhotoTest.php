@@ -26,6 +26,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $localStorageOne = new LocalStorage(__DIR__ . "/..", "files/photo/", $mockBaseUrlImpl);
         $localStorageTwo = new LocalStorage(__DIR__ . "/..", "files/photo_2/", $mockBaseUrlImpl);
 
+        // TODO Mock DataStore
         $dataStore = new SqliteDataStore(array(
             "database" => __DIR__ . "/../files/database/test_photos.db"
         ));

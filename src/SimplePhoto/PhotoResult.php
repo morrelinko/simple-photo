@@ -1,7 +1,18 @@
-<?php namespace SimplePhoto;
+<?php
+
+/*
+ * This file is part of the SimplePhoto package.
+ *
+ * (c) Laju Morrison <morrelinko@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SimplePhoto;
 
 /**
- * @author Morrison Laju <morrelinko@gmail.com>
+ * @author Laju Morrison <morrelinko@gmail.com>
  */
 class PhotoResult
 {
@@ -83,23 +94,23 @@ class PhotoResult
     public function __construct($photoData)
     {
         $photoData = array_merge(array(
-            "photo_id" => null,
-            "file_name" => null,
-            "file_path" => null,
-            "file_extension" => null,
-            "storage_name" => null,
-            "created_at" => null,
-            "updated_at" => null
+            'photo_id' => null,
+            'file_name' => null,
+            'file_path' => null,
+            'file_extension' => null,
+            'storage_name' => null,
+            'created_at' => null,
+            'updated_at' => null
         ), $photoData);
 
-        $this->setId($photoData["photo_id"]);
-        $this->setFilename($photoData["file_name"]);
-        $this->setFileExtension($photoData["file_extension"]);
-        $this->setStorage($photoData["storage_name"]);
-        $this->setFilePath($photoData["file_path"]);
-        $this->setMime($photoData["file_mime"]);
-        $this->setCreatedAt($photoData["created_at"]);
-        $this->setUpdatedAt($photoData["created_at"]);
+        $this->setId($photoData['photo_id']);
+        $this->setFilename($photoData['file_name']);
+        $this->setFileExtension($photoData['file_extension']);
+        $this->setStorage($photoData['storage_name']);
+        $this->setFilePath($photoData['file_path']);
+        $this->setMime($photoData['file_mime']);
+        $this->setCreatedAt($photoData['created_at']);
+        $this->setUpdatedAt($photoData['created_at']);
     }
 
     /**

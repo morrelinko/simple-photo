@@ -1,7 +1,18 @@
-<?php namespace SimplePhoto\Source;
+<?php
+
+/*
+ * This file is part of the SimplePhoto package.
+ *
+ * (c) Laju Morrison <morrelinko@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SimplePhoto\Source;
 
 /**
- * @author Morrison Laju <morrelinko@gmail.com>
+ * @author Laju Morrison <morrelinko@gmail.com>
  */
 class PhpFileUploadSource implements PhotoSourceInterface
 {
@@ -20,7 +31,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
      */
     public function getName()
     {
-        return $this->fileData["name"];
+        return $this->fileData['name'];
     }
 
     /**
@@ -28,6 +39,6 @@ class PhpFileUploadSource implements PhotoSourceInterface
      */
     public function getFile()
     {
-        return $this->fileData["tmp_name"];
+        return $this->fileData['tmp_name'];
     }
 }
