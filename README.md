@@ -63,6 +63,34 @@ $photo = $simplePhoto->get($photoId, [
 ]);
 ```
 
+## Getting a collection of photos
+
+```php
+$photos = $simplePhoto->collection([2, 23, 15]);
+
+$photos->get(0); // gets photo '2'
+$photos->get(1); // gets photo '23'
+
+```
+
+PhotoCollection come with a handful of methods for manipulating its items
+
+```php
+// Creates a collection of photos
+$photos = $simplePhoto->collection([2, 23, 15, 34, 21, 1, 64, 324]);
+
+// Gets all as array
+$allPhotos = $photos->all();
+
+// Uses filter() method.
+// This example creates a new photo collection containing only photos in 'local' storage
+$localPhotos = $photos->filter(function($photo) {
+    return $photo->storage() == 'local';
+});
+
+var_dump($localPhotos);
+```
+
 Other transformation options will be made available...
 
 ## Credits
