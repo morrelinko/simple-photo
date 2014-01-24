@@ -141,7 +141,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
     public function testCollection()
     {
-        $photos = $this->simplePhoto->collection([1, 2, 3, 4], ['fallback' => 'not_found.png']);
+        $photos = $this->simplePhoto->collection(array(1, 2, 3, 4), array('fallback' => 'not_found.png'));
         $this->assertContainsOnlyInstancesOf("SimplePhoto\\PhotoResult", $photos->all());
         $this->assertInstanceOf('SimplePhoto\\PhotoResult', $photos->get(1));
         $this->assertEquals(4, count($photos));
