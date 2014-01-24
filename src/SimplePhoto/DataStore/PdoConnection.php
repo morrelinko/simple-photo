@@ -115,6 +115,29 @@ abstract class PdoConnection
     /**
      * {@inheritDocs}
      */
+    public function getPhotos(array $photoIds)
+    {
+        $ids = str_repeat('?, ', count($photoIds)) . '?';
+        $statement = $this->db->prepare(sprintf('
+            SELECT
+                photo_id, storage_name, file_name, file_path,
+                file_extension, file_mime, created_at, updated_at
+            FROM %s
+            WHERE photo_id IN (' . $ids . ')
+        ', $this->options['photo_table']));
+
+        $statement->execute($photoIds);
+
+        if ($photos = $statement->fetchAll(\PDO::FETCH_ASSOC)) {
+            return $photos;
+        }
+
+        return array();
+    }
+
+    /**
+     * {@inheritDocs}
+     */
     public function deletePhoto($photoId)
     {
         // Delete from database

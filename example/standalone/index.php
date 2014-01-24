@@ -45,7 +45,7 @@ $statement = $dataStore->getConnection()->prepare('SELECT * FROM photos');
 $statement->execute();
 
 foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
-    var_dump($simplePhoto->get($photo['photo_id']));
+    // var_dump($simplePhoto->get($photo['photo_id']));
 }
 
 // Delete Photo
@@ -66,6 +66,23 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
  * echo '<img src="' . $resize->url() . '" />';
  * }
  * /**/
+
+$photos = $simplePhoto->collection([6, 1, 2, 3], ['fallback' => 'not_found.png']);
+
+$localPhotos = $photos->filter(function ($photo) {
+    /** @var $photo SimplePhoto\PhotoResult */
+    return $photo->storage() == 'local';
+});
+
+$notFoundPhotos = $photos->filter(function ($photo) {
+    /** @var $photo SimplePhoto\PhotoResult */
+    return $photo->storage() == \SimplePhoto\StorageManager::FALLBACK_STORAGE;
+});
+
+// var_dump($photos);
+
+var_dump($localPhotos);
+//var_dump($notFoundPhotos);
 ?>
 
 <form method="post" enctype="multipart/form-data">

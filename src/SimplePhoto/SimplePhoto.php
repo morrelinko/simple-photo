@@ -18,6 +18,7 @@ use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
 use SimplePhoto\Toolbox\Image;
 use SimplePhoto\Toolbox\ImageTransformer;
+use SimplePhoto\Toolbox\PhotoCollection;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -181,28 +182,108 @@ class SimplePhoto
 
     /**
      * @param int $photoId PhotoID
-     * @param array $options Available options
-     * <pre>
-     * fallback: A fallback photo to use when photo is not found
-     * transform: Transformation options to be applied to photo
-     * </pre>
+     * @param array $options
+     *
+     * @see SimplePhoto::build()
      *
      * @return PhotoResult|false Returns false if photo is not
      * found and no fallback photo setup & defined
      */
     public function get($photoId, array $options = array())
     {
+        $photo = $this->dataStore->getPhoto($photoId);
+
+        return $this->build($photo, $options);
+    }
+
+    /**
+     * Gets multiple photos
+     *
+     * @param array $ids List of photo ids
+     * @param array $options
+     *
+     * @see SimplePhoto::build()
+     *
+     * @return mixed|PhotoCollection
+     */
+    public function collection(array $ids, array $options = array())
+    {
+        $photos = $this->dataStore->getPhotos($ids);
+
+        if (empty($photos)) {
+            return $this->createPhotoCollection();
+        }
+
+        $photosSorted = array();
+        $foundIds = array_values(array_map(function ($photo) use ($ids, &$photosSorted) {
+            // Add found photo IDs
+            $photosSorted[array_search($photo['photo_id'], $ids)] = $photo;
+
+            // This will be used to build found IDs
+            return $photo['photo_id'];
+        }, $photos));
+
+        // Add missing photo IDs
+        foreach (array_diff($ids, $foundIds) as $index => $id) {
+            $photosSorted[$index] = array();
+        }
+
+        $photos = $this->createPhotoCollection($photosSorted);
+        $photos->transform(function ($photo) use ($options) {
+            return $this->build($photo, $options);
+        })->ksort();
+
+        return $photos;
+    }
+
+    /**
+     * Delete photo
+     *
+     * @param int $photoId
+     *
+     * @return bool
+     */
+    public function delete($photoId)
+    {
+        $photo = $this->dataStore->getPhoto($photoId);
+
+        if (!$photo) {
+            // Photo does not exists, lets assume its deleted
+            return true;
+        }
+
+        $storage = $this->storageManager->get($photo['storage_name']);
+
+        if ($this->dataStore->deletePhoto($photoId)) {
+            if ($storage->deletePhoto($photo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array $photo
+     * @param array $photo Photo data
+     * @param array $options Available options
+     * <pre>
+     * fallback: A fallback photo to use when photo is not found
+     * transform: Transformation options to be applied to photo
+     * </pre>
+     *
+     * @return bool|PhotoResult
+     */
+    public function build(array $photo, array $options = array())
+    {
         $options = array_merge(array(
             'transform' => array(),
             'fallback' => null,
         ), $options);
 
-        $photo = $this->dataStore->getPhoto($photoId);
-
         if (empty($photo)) {
             // Could not find photo data
-            if (
-                $options['fallback'] == null ||
+            if ($options['fallback'] == null ||
                 !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)
             ) {
                 // If default is not set, then no default photo is available
@@ -213,8 +294,8 @@ class SimplePhoto
             $photo = array(
                 'photo_id' => 0,
                 'storage_name' => StorageManager::FALLBACK_STORAGE,
-                'file_name' => pathinfo($options['default'], PATHINFO_FILENAME),
-                'file_path' => $options['default'],
+                'file_name' => pathinfo($options['fallback'], PATHINFO_FILENAME),
+                'file_path' => $options['fallback'],
                 'file_mime' => null,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
@@ -249,33 +330,6 @@ class SimplePhoto
         $photoResult->setUrl($storage->getPhotoUrl($photoResult->filePath()));
 
         return $photoResult;
-    }
-
-    /**
-     * Delete photo
-     *
-     * @param int $photoId
-     *
-     * @return bool
-     */
-    public function delete($photoId)
-    {
-        $photo = $this->dataStore->getPhoto($photoId);
-
-        if (!$photo) {
-            // Photo does not exists, lets assume its deleted
-            return true;
-        }
-
-        $storage = $this->storageManager->get($photo['storage_name']);
-
-        if ($this->dataStore->deletePhoto($photoId)) {
-            if ($storage->deletePhoto($photo)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -362,5 +416,10 @@ class SimplePhoto
         $mime = finfo_file($fileInfo, $file);
 
         return !empty($mime) ? $mime : null;
+    }
+
+    private function createPhotoCollection(array $photos = array())
+    {
+        return new PhotoCollection($photos);
     }
 }
