@@ -229,8 +229,9 @@ class SimplePhoto
         }
 
         $photos = $this->createPhotoCollection($photosSorted);
-        $photos->transform(function ($photo) use ($options) {
-            return $this->build($photo, $options);
+        $simplePhoto = $this; // php 5.3 compatibility
+        $photos->transform(function ($photo) use ($simplePhoto, $options) {
+            return $simplePhoto->build($photo, $options);
         })->ksort();
 
         return $photos;
