@@ -5,7 +5,7 @@ namespace SimplePhoto\Toolbox;
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
  */
-class PhotoCollection
+class PhotoCollection implements \Countable
 {
     protected $photos = array();
 
@@ -126,6 +126,16 @@ class PhotoCollection
     public function isEmpty()
     {
         return empty($this->photos);
+    }
+
+    /**
+     * @see \Countable::count()
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->photos);
     }
 }
  
