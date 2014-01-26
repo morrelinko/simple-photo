@@ -110,7 +110,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     {
         // Same as $this->simplePhoto->uploadFromFilePath()
         $photoId = $this->simplePhoto->uploadFrom(
-            $this->photoSourceFile, array(), new FilePathSource());
+            $this->photoSourceFile, new FilePathSource(), array());
         $photo = $this->simplePhoto->get($photoId, array(
             'transform' => array(
                 'size' => array(50, 50)
