@@ -23,30 +23,12 @@ class HttpBaseUrl implements BaseUrlInterface
      */
     public function getBaseUrl()
     {
-        $basePath = pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME);
+        $secure = (isset($_SERVER['HTTPS']) && filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN)) ||
+            ($_SERVER['SERVER_PORT'] == 443);
 
-        return 'http' . ($this->isSecure() ? 's' : '') . '://' . $this->getHost() . ($basePath == '/' ? '' : '/' . trim($basePath, '/'));
-    }
+        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+        $path = pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME);
 
-    /**
-     * @return string
-     */
-    public function getHost()
-    {
-        return isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSecure()
-    {
-        if ((isset($_SERVER['HTTPS']) AND filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN)) ||
-            ($_SERVER['SERVER_PORT'] == 443)
-        ) {
-            return true;
-        }
-
-        return false;
+        return 'http' . ($secure ? 's' : '') . '://' . $host . ($path == '/' ? '' : '/' . trim($path, '/'));
     }
 }
