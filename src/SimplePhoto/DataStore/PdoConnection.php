@@ -76,15 +76,16 @@ abstract class PdoConnection
      */
     public function addPhoto(array $values)
     {
-        $statement = $this->db->prepare(sprintf('
+        $sql = '
             INSERT INTO %s (
                 storage_name, file_name, file_extension, file_path, file_mime
             )
             VALUES (
                 :storageName, :fileName, :fileExtension, :filePath, :fileMime
             )
-        ', $this->options['photo_table']));
+        ';
 
+        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
         $statement->execute($values);
 
         return $this->db->lastInsertId();
@@ -95,14 +96,15 @@ abstract class PdoConnection
      */
     public function getPhoto($photoId)
     {
-        $statement = $this->db->prepare(sprintf('
+        $sql = '
             SELECT
                 photo_id, storage_name, file_name, file_path,
                 file_extension, file_mime, created_at, updated_at
             FROM %s
             WHERE photo_id = :photoId
-        ', $this->options['photo_table']));
+        ';
 
+        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
         $statement->execute(compact('photoId'));
 
         if ($photo = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -118,14 +120,15 @@ abstract class PdoConnection
     public function getPhotos(array $photoIds)
     {
         $ids = str_repeat('?, ', count($photoIds)) . '?';
-        $statement = $this->db->prepare(sprintf('
+        $sql = '
             SELECT
                 photo_id, storage_name, file_name, file_path,
                 file_extension, file_mime, created_at, updated_at
             FROM %s
             WHERE photo_id IN (' . $ids . ')
-        ', $this->options['photo_table']));
+        ';
 
+        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
         $statement->execute($photoIds);
 
         if ($photos = $statement->fetchAll(\PDO::FETCH_ASSOC)) {
@@ -140,11 +143,13 @@ abstract class PdoConnection
      */
     public function deletePhoto($photoId)
     {
-        // Delete from database
-        $statement = $this->db->prepare(sprintf('
+        $sql = '
             DELETE FROM %s
             WHERE photo_id = :photoId
-        ', $this->options['photo_table']));
+        ';
+
+        // Delete from database
+        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
 
         return $statement->execute(compact('photoId'));
     }

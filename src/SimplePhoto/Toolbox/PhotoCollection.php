@@ -138,4 +138,3 @@ class PhotoCollection implements \Countable
         return count($this->photos);
     }
 }
- 

@@ -46,7 +46,8 @@ class ImageTransformer
 
         if (!isset($info['mime'])) {
             throw new \RuntimeException(sprintf(
-                'Could not load image [%s];', $file
+                'Could not load image [%s];',
+                $file
             ));
         }
 
@@ -79,11 +80,19 @@ class ImageTransformer
         $opacity = (int) ceil($background->alpha() * 0.49803921568627);
 
         $resource = imagecreatetruecolor($width, $height);
+
         $color = imagecolorallocatealpha(
-            $resource, $background->red(), $background->green(), $background->blue(), $opacity);
+            $resource,
+            $background->red(),
+            $background->green(),
+            $background->blue(),
+            $opacity
+        );
+
         imagefill($resource, 0, 0, $color);
 
         imagealphablending($resource, false);
+
         imagesavealpha($resource, true);
 
         return $resource;
@@ -112,7 +121,8 @@ class ImageTransformer
                 break;
             default:
                 throw new \RuntimeException(
-                    'Invalid image type ({$image->getType()});');
+                    'Invalid image type (' . $image->getType() . ');'
+                );
                 break;
         }
     }
@@ -137,8 +147,17 @@ class ImageTransformer
         $tmpImage = $this->createImage($width, $height, new Color(0xFFFFFFFF));
 
         if (imagecopyresampled(
-            $tmpImage, $this->image->getResource(), 0, 0, 0, 0,
-            $width, $height, $this->image->getWidth(), $this->image->getHeight())
+            $tmpImage,
+            $this->image->getResource(),
+            0,
+            0,
+            0,
+            0,
+            $width,
+            $height,
+            $this->image->getWidth(),
+            $this->image->getHeight()
+        )
         ) {
             imagedestroy($this->image->getResource());
 

@@ -327,7 +327,8 @@ class SimplePhoto
                     $storage,
                     $photoResult->originalFilePath(),
                     $modifiedFileName,
-                    $options['transform']);
+                    $options['transform']
+                );
             }
 
             // Set the file path to the new modified photo path

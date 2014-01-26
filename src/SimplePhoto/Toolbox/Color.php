@@ -195,7 +195,10 @@ class Color
                 break;
             default:
                 throw new \LogicException(sprintf(
-                    'Invalid Hex value [%s] in %s', $value, __METHOD__));
+                    'Invalid Hex value [%s] in %s',
+                    $value,
+                    __METHOD__
+                ));
                 break;
         }
 
