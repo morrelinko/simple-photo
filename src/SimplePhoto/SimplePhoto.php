@@ -45,10 +45,11 @@ class SimplePhoto
      *
      * @param StorageManager $storageManager
      * @param DataStoreInterface $dataStore
-     * @param array $options
      */
-    public function __construct(StorageManager $storageManager = null, DataStoreInterface $dataStore = null, $options = array())
-    {
+    public function __construct(
+        StorageManager $storageManager = null,
+        DataStoreInterface $dataStore = null
+    ) {
         if ($storageManager != null) {
             $this->setStorageManager($storageManager);
         }
@@ -100,7 +101,7 @@ class SimplePhoto
      */
     public function uploadFromPhpFileUpload($photoData, array $options = array())
     {
-        return $this->uploadFrom($photoData, $options, new PhpFileUploadSource());
+        return $this->uploadFrom($photoData, new PhpFileUploadSource(), $options);
     }
 
     /**
@@ -113,7 +114,7 @@ class SimplePhoto
      */
     public function uploadFromFilePath($photoData, array $options = array())
     {
-        return $this->uploadFrom($photoData, $options, new FilePathSource());
+        return $this->uploadFrom($photoData, new FilePathSource(), $options);
     }
 
     /**
@@ -131,8 +132,8 @@ class SimplePhoto
      */
     public function uploadFrom(
         $photoData,
-        array $options = array(),
-        PhotoSourceInterface $photoSource
+        PhotoSourceInterface $photoSource,
+        array $options = array()
     ) {
         /**
          * @var array $transform
@@ -312,7 +313,10 @@ class SimplePhoto
         if (!empty($options['transform'])) {
             // Transformation options available
             $modifiedFileName = $this->generateModifiedSaveName(
-                $photo['file_path'], $options['transform']);
+                $photo['file_path'],
+                $options['transform']
+            );
+
             $photoResult->setOriginalFilePath($photo['file_path']);
             $photoResult->setOriginalPath($storage->getPhotoPath($photo['file_path']));
 
