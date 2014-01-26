@@ -56,6 +56,16 @@ class StorageManager
     }
 
     /**
+     * Checks if a fallback storage has been defined
+     *
+     * @return bool
+     */
+    public function hasFallback()
+    {
+        return $this->has(self::FALLBACK_STORAGE);
+    }
+
+    /**
      * @param $name
      *
      * @return StorageInterface
@@ -65,7 +75,7 @@ class StorageManager
     {
         if (!$this->has($name)) {
             throw new \RuntimeException(
-                'Photo storage [{$name}] does not exists.'
+                'Photo storage [' . $name . '] does not exists.'
             );
         }
 

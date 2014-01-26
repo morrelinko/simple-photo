@@ -210,7 +210,10 @@ class SimplePhoto
     {
         $photos = $this->dataStore->getPhotos($ids);
 
-        if (empty($photos)) {
+        if (empty($photos) && !$this->storageManager->hasFallback()) {
+            // ( Optimization )
+            // If no fallback has been defined, and no photo was found
+            // lets just skip the computation that follows.
             return $this->createPhotoCollection();
         }
 
