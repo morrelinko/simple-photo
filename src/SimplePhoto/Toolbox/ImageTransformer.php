@@ -115,11 +115,9 @@ class ImageTransformer
                 $image->setResource(imagecreatefrompng($image->getFile()));
                 break;
             case IMG_JPG:
-            case 2:
                 $image->setResource(imagecreatefromjpeg($image->getFile()));
                 break;
             case IMG_GIF:
-            case 1:
                 $image->setResource(imagecreatefromgif($image->getFile()));
                 break;
             default:
