@@ -11,13 +11,13 @@
 
 namespace SimplePhoto;
 
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
 use SimplePhoto\DataStore\DataStoreInterface;
 use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
-use SimplePhoto\Toolbox\Image;
-use SimplePhoto\Toolbox\ImageTransformer;
 use SimplePhoto\Toolbox\PhotoCollection;
 
 /**
@@ -361,15 +361,16 @@ class SimplePhoto
 
         // Load image for manipulation
         $tmpFile = $storage->getPhotoResource($originalFile);
-        $imageTransformer = new ImageTransformer($tmpFile, new Image());
+        $imagine = new Imagine();
+        $transformer = $imagine->open($tmpFile);
 
         // Start transforming
         if (isset($transform['size'])) {
             list($width, $height) = $transform['size'];
-            $imageTransformer->resize($width, $height);
+            $transformer->resize(new Box($width, $height));
         }
 
-        $imageTransformer->save($tmpFile);
+        $transformer->save($tmpFile);
         if ($storage->upload($tmpFile, $modifiedFile)) {
             unlink($tmpFile);
 
