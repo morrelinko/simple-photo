@@ -370,7 +370,10 @@ class SimplePhoto
             $transformer->resize(new Box($width, $height));
         }
 
-        $transformer->save($tmpFile);
+        $transformer->save($tmpFile, array(
+            'format' => pathinfo($originalFile, PATHINFO_EXTENSION)
+        ));
+
         if ($storage->upload($tmpFile, $modifiedFile)) {
             unlink($tmpFile);
 
