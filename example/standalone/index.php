@@ -16,7 +16,7 @@ $dataStore = new \SimplePhoto\DataStore\SqliteDataStore(array(
 ));
 
 $dataStore->getConnection()->exec("
-    CREATE TABLE IF NOT EXISTS photos (
+    CREATE TABLE IF NOT EXISTS photo (
         photo_id INTEGER PRIMARY KEY,
         storage_name TEXT NOT NULL,
         file_name TEXT NOT NULL,

@@ -3,6 +3,7 @@
 use SimplePhoto\DataStore\SqliteDataStore;
 use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Storage\LocalStorage;
+use SimplePhoto\Utils\FileUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -12,7 +13,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     const BASE_URL = "http://example.com";
 
     const CREATE_PHOTO_TABLE = '
-        CREATE TABLE IF NOT EXISTS photos (
+        CREATE TABLE IF NOT EXISTS photo (
             photo_id INTEGER PRIMARY KEY,
             storage_name TEXT NOT NULL,
             file_name TEXT NOT NULL,
@@ -63,11 +64,34 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->simplePhoto = null;
-
         \Mockery::close();
 
-        if (file_exists(__DIR__ . '/../files/database/test_photos.db')) {
-            unlink(__DIR__ . '/../files/database/test_photos.db');
+        $filesDir = __DIR__ . '/../files';
+        if (file_exists($filesDir . '/database/test_photos.db')) {
+            unlink($filesDir . '/database/test_photos.db');
+        }
+
+        try {
+            $fileSplObjects = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($filesDir . '/photo'),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach ($fileSplObjects as $fullFileName => $fileSplObject) {
+                $fullFileName = FileUtils::normalizePath($fullFileName);
+                /** @var $fileSplObject \SplFileInfo */
+                if (in_array($fileSplObject->getFilename(), array('.', '..'))) {
+                    continue;
+                }
+
+                if ($fileSplObject->isDir()) {
+                    rmdir($fullFileName);
+                } else {
+                    unlink($fullFileName);
+                }
+            }
+        } catch (\UnexpectedValueException $e) {
+            printf("Files Directory contained a directory we can not recurse into");
         }
     }
 
