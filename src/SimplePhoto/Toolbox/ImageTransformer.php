@@ -96,6 +96,9 @@ class ImageTransformer
      */
     public function createResource(Image $image)
     {
+        // https://bugs.php.net/bug.php?id=54940
+        ini_set('gd.jpeg_ignore_warning', 1);
+
         // set resource
         switch ($image->getType()) {
             case IMG_PNG:
