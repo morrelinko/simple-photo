@@ -37,7 +37,7 @@ abstract class PdoConnection
     public function __construct($connection, array $options = array())
     {
         $this->options = array_merge(array(
-            'photo_table' => 'photos'
+            'photo_table' => 'photo'
         ), $options);
 
         if (!$connection instanceof \PDO) {
