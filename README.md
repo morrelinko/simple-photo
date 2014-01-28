@@ -4,6 +4,18 @@ Photo uploading and management made easy
 
 [![Build Status](https://travis-ci.org/morrelinko/simple-photo.png?branch=master)](https://travis-ci.org/morrelinko/simple-photo)
 
+## Installation
+
+Through Composer
+
+```json
+{
+    "require": {
+        "morrelinko/simple-photo": "2.*"
+    }
+}
+```
+
 ## Uploading Photo
 
 ```php
