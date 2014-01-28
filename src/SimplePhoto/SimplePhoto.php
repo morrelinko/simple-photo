@@ -214,27 +214,28 @@ class SimplePhoto
         $photos = $this->dataStore->getPhotos($ids);
 
         if (empty($photos) && !$this->storageManager->hasFallback()) {
-            // ( Optimization )
             // If no fallback has been defined, and no photo was found
             // lets just skip the computation that follows.
             return $this->createPhotoCollection();
         }
 
-        $photosSorted = array();
-        $foundIds = array_values(array_map(function ($photo) use ($ids, &$photosSorted) {
-            // Add found photo IDs
-            $photosSorted[array_search($photo['photo_id'], $ids)] = $photo;
+        $found = array();
+        array_map(function ($photo) use ($ids, &$found) {
+            // This will be used to build found Photos
+            return $found[$photo['photo_id']] = $photo;
+        }, $photos);
 
-            // This will be used to build found IDs
-            return $photo['photo_id'];
-        }, $photos));
+        $sorted = array();
+        foreach ($ids as $index => $id) {
+            $photo = array();
+            if (array_key_exists($id, $found)) {
+                $photo = $found[$id];
+            }
 
-        // Add missing photo IDs
-        foreach (array_diff($ids, $foundIds) as $index => $id) {
-            $photosSorted[$index] = array();
+            $sorted[$index] = $photo;
         }
 
-        $photos = $this->createPhotoCollection($photosSorted);
+        $photos = $this->createPhotoCollection($sorted);
         $simplePhoto = $this; // php 5.3 compatibility
         $photos->transform(function ($photo) use ($simplePhoto, $options) {
             return $simplePhoto->build($photo, $options);
@@ -268,6 +269,69 @@ class SimplePhoto
         }
 
         return false;
+    }
+
+    /**
+     * Push `PhotoResult` item to an array/iterator
+     *
+     * @param array|\Iterator $haystack List of items
+     * @param array $keys Key names containing photo ID
+     * @param callable $callback (Optional) Callback to use for building
+     * items to push into the array
+     * @param array $options Photo options
+     *
+     * @see build()
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function push(&$haystack, array $keys = array(), \Closure $callback = null, array $options = array())
+    {
+        if ($haystack instanceof \Iterator) {
+            $haystack = iterator_to_array($haystack, true);
+        }
+
+        if (!is_array($haystack)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Argument 1 passed to %s must be an array
+                 or implement interface \Iterator',
+                __METHOD__
+            ));
+        }
+
+        // Generate an array of index that will
+        // be pushed to the original array
+        $keys = empty($keys) ? array('photo_id' => 'photo') : $keys;
+        foreach ($keys as $index => $name) {
+            if (is_int($index)) {
+                unset($keys[$index]);
+                $keys[$name] = substr($name, 0, -3); // Remove '_id'
+            }
+        }
+
+        if ($callback == null) {
+            $callback = function (&$item, $photo, $index, $name) use ($keys) {
+                $item[$name] = $photo;
+
+                return $item;
+            };
+        }
+
+        if (array_values($haystack) === $haystack) {
+            // This array is a list
+            foreach ($keys as $index => $name) {
+                // Get list of photo ids
+                $ids = $this->arrayColumn($haystack, $index);
+                $photos = $this->collection($ids, $options);
+                foreach ($haystack as $key => $item) {
+                    $callback($haystack[$key], $photos->get($key), $index, $name);
+                }
+            }
+        } else {
+            foreach ($keys as $index => $name) {
+                $photo = $this->get($haystack[$index], $options);
+                $callback($haystack, $photo, $index, $name);
+            }
+        }
     }
 
     /**
@@ -472,6 +536,25 @@ class SimplePhoto
         return $format;
     }
 
+    /**
+     * @param array $array
+     * @param $index
+     *
+     * @return array
+     */
+    private function arrayColumn(array $array, $index)
+    {
+        //$values = function_exists('array_column') ? array_column($array, $index) : array();
+        return array_map(function ($item) use ($index) {
+            return $item[$index];
+        }, $array);
+    }
+
+    /**
+     * @param array $photos
+     *
+     * @return PhotoCollection
+     */
     private function createPhotoCollection(array $photos = array())
     {
         return new PhotoCollection($photos);

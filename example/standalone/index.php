@@ -41,7 +41,7 @@ if (isset($_POST['upload']) && isset($_FILES['image'])) {
     echo '<img src="' . $simplePhoto->get($photoId)->url() . '" />';
 }
 
-$statement = $dataStore->getConnection()->prepare('SELECT * FROM photos');
+$statement = $dataStore->getConnection()->prepare('SELECT * FROM photo');
 $statement->execute();
 
 foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
@@ -59,7 +59,7 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
 /**/
 if ($resize = $simplePhoto->get(1, array(
     'transform' => array(
-        'size' => array(200, 200),
+        'size' => array(100, 100),
         'rotate' => array(180)
     )
 ))
@@ -67,10 +67,73 @@ if ($resize = $simplePhoto->get(1, array(
     echo '<img src="' . $resize->url() . '" />';
 }
 
-var_dump($resize);
+//var_dump($resize);
 /**/
 
-$photos = $simplePhoto->collection([6, 1, 2, 3], ['fallback' => 'not_found.png']);
+$photos = $simplePhoto->collection([3, 2, 1, 4, 5], [
+    'fallback' => 'not_found.png'
+]);
+// var_dump($photos);
+
+$data = array(
+    'user_id' => 4,
+    'username' => 'morrelinko',
+    'photo_id' => 1,
+    'cover_photo_id' => 2
+);
+
+$data2 = array(
+    'user_id' => 4,
+    'username' => 'morrelinko',
+    'photo_id' => 1,
+);
+
+$data3 = array(
+    array(
+        'user_id' => 4,
+        'username' => 'morrelinko',
+        'photo_id' => 1,
+    ),
+    array(
+        'user_id' => 4,
+        'username' => 'morrelinko',
+        'photo_id' => 1,
+    ),
+    array(
+        'user_id' => 4,
+        'username' => 'morrelinko',
+        'photo_id' => 1,
+    )
+);
+
+$callback = function (&$item, $photo, $index, $name) {
+    if ($index == 'photo_id') {
+        $item['user_photo'] = $photo->url();
+    } else if ($index == 'cover_photo_id') {
+        $item['cover_photo'] = $photo->url();
+    }
+};
+
+$options = array('fallback' => 'not_found.png');
+
+$simplePhoto->push(
+    $data,
+    array('photo_id', 'cover_photo_id'),
+    null,
+    $options
+);
+
+
+$simplePhoto->push($data2, array(), function ($item, $photo) {
+    /** @var $photo SimplePhoto\PhotoResult */
+    $item['photo_url'] = $photo->url();
+});
+
+$simplePhoto->push($data3, array('photo_id'), null, $options);
+
+//var_dump($data);
+//var_dump($data2);
+var_dump($data3);
 
 $localPhotos = $photos->filter(function ($photo) {
     /** @var $photo SimplePhoto\PhotoResult */
