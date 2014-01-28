@@ -147,6 +147,7 @@ class SimplePhoto
         $photoSource->process($photoData);
         $saveName = $this->generateOriginalSaveName($photoSource->getName());
         $storage = $this->getStorageManager()->get($storageName);
+        $fileMime = $this->getFileMime($photoSource->getFile());
 
         if ($transform) {
             // If we are to perform photo transformation during upload,
@@ -156,6 +157,7 @@ class SimplePhoto
                 $storage,
                 $photoSource->getFile(),
                 $saveName,
+                $fileMime,
                 $transform
             );
         } else {
@@ -174,7 +176,7 @@ class SimplePhoto
                 'filePath' => $uploadPath,
                 'fileName' => $photoSource->getName(),
                 'fileExtension' => pathinfo($photoSource->getName(), PATHINFO_EXTENSION),
-                'fileMime' => $this->getFileMime($photoSource->getFile()),
+                'fileMime' => $fileMime,
             ));
         }
 
@@ -301,7 +303,7 @@ class SimplePhoto
                 'storage_name' => StorageManager::FALLBACK_STORAGE,
                 'file_name' => pathinfo($options['fallback'], PATHINFO_FILENAME),
                 'file_path' => $options['fallback'],
-                'file_mime' => null,
+                'file_mime' => 'image/png', // Look into this
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             );
@@ -327,6 +329,7 @@ class SimplePhoto
                     $storage,
                     $photoResult->originalFilePath(),
                     $modifiedFileName,
+                    $photo['file_mime'],
                     $options['transform']
                 );
             }
@@ -345,6 +348,7 @@ class SimplePhoto
      * @param StorageInterface $storage
      * @param string $originalFile
      * @param string $modifiedFile
+     * @param string $mimeType
      * @param array $transform
      *
      * @return string|bool Modified file if successful or false otherwise
@@ -353,6 +357,7 @@ class SimplePhoto
         StorageInterface $storage,
         $originalFile,
         $modifiedFile,
+        $mimeType,
         array $transform = array()
     ) {
         if (!$storage->exists($originalFile)) {
@@ -370,8 +375,13 @@ class SimplePhoto
             $transformer->resize(new Box($width, $height));
         }
 
+        if (isset($transform['rotate'])) {
+            list($angle, $background) = array_pad($transform['rotate'], 2, null);
+            $transformer->rotate((int) $angle, $background);
+        }
+
         $transformer->save($tmpFile, array(
-            'format' => pathinfo($originalFile, PATHINFO_EXTENSION)
+            'format' => $this->getSaveFormat($mimeType)
         ));
 
         if ($storage->upload($tmpFile, $modifiedFile)) {
@@ -410,6 +420,11 @@ class SimplePhoto
             $newName .= implode('x', $transform['size']);
         }
 
+        if (isset($transform['rotate'][0])) {
+            // We only need the angle for the name
+            $newName .= sprintf('-r%s', $transform['rotate'][0]);
+        }
+
         // Extract information from original file
         $directory = dirname($oldName);
         $originalName = pathinfo($oldName, PATHINFO_FILENAME);
@@ -429,6 +444,32 @@ class SimplePhoto
         $mime = finfo_file($fileInfo, $file);
 
         return !empty($mime) ? $mime : null;
+    }
+
+    /**
+     * Gets the format that will be used for saving the photo
+     *
+     * @param string $mime
+     *
+     * @return string
+     */
+    private function getSaveFormat($mime)
+    {
+        $format = 'png';
+        switch ($mime) {
+            case 'image/jpg':
+            case 'image/jpeg':
+                $format = 'jpeg';
+                break;
+            case 'image/gif':
+                $format = 'gif';
+                break;
+            case 'image/png':
+                $format = 'png';
+                break;
+        }
+
+        return $format;
     }
 
     private function createPhotoCollection(array $photos = array())

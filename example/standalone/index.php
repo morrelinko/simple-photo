@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 // (Basic) Setup (this must have been done somewhere in your script so that it can be reused throughout your app)
 $storageManager = new \SimplePhoto\StorageManager();
@@ -56,16 +56,19 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
 
 // Get a photo Resized
 
-/**
- * if ($resize = $simplePhoto->get(1, array(
- * 'transform' => array(
- * 'size' => array(200, 200)
- * )
- * ))
- * ) {
- * echo '<img src="' . $resize->url() . '" />';
- * }
- * /**/
+/**/
+if ($resize = $simplePhoto->get(1, array(
+    'transform' => array(
+        'size' => array(200, 200),
+        'rotate' => array(180)
+    )
+))
+) {
+    echo '<img src="' . $resize->url() . '" />';
+}
+
+var_dump($resize);
+/**/
 
 $photos = $simplePhoto->collection([6, 1, 2, 3], ['fallback' => 'not_found.png']);
 
@@ -81,7 +84,7 @@ $notFoundPhotos = $photos->filter(function ($photo) {
 
 // var_dump($photos);
 
-var_dump($localPhotos);
+// var_dump($localPhotos);
 //var_dump($notFoundPhotos);
 ?>
 
