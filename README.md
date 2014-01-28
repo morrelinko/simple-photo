@@ -51,19 +51,27 @@ $dataStore = new SqliteDataStore(['database' => 'photo_app.db']);
 $simplePhoto = new SimplePhoto($storageManager, $dataStore);
 ```
 
-## Retrieving photos (+Transformation)
+## Get photos (+Transformation)
 
 If you want to get a re-sized photo, use the "transform" options of the second argument
 
 ```php
 $photo = $simplePhoto->get($photoId, [
-	"transform" => [
-		"size" => [200, 200]
+	'transform' => [
+		'size' => [200, 200]
 	]
 ]);
 ```
 
-## Getting a collection of photos
+All transformation options available...
+```php
+[
+    'size' => [100, 100]
+    'rotate' => [45]
+]
+```
+
+## Collection of photos
 
 ```php
 $photos = $simplePhoto->collection([2, 23, 15]);
@@ -91,7 +99,46 @@ $localPhotos = $photos->filter(function($photo) {
 var_dump($localPhotos);
 ```
 
-Other transformation options will be made available...
+## Push (in english 'push photo result into')
+
+```php
+// Probably gotten from a db
+$users = [
+    ['user_id' => 1, 'name' => 'John Doe', 'photo_id' => 2],
+    ['user_id' => 2, 'name' => 'Mary Alice', 'photo_id' => 5]
+];
+
+$simplePhoto->push($users, array('photo_id'));
+
+var_dump($users);
+
+// Sample Output:
+[
+    ['user_id' => 1, 'name' => 'John Doe', 'photo_id' => 2, 'photo' => (Object SimplePhoto\PhotoResult)],
+    ['user_id' => 2, 'name' => 'Mary Alice', 'photo_id' => 5, 'photo' => (Object SimplePhoto\PhotoResult)]
+];
+
+```
+
+If you would like complete control on what is pushed to the array from the photo result,
+
+you specify a callback as third argument to `push()`
+
+```php
+
+$simplePhoto->push($users, array('photo_id'), function(&$item, $photo, $index, $name) {
+    $item['photo_url'] = $photo->url();
+});
+
+var_dump($users);
+
+// Sample Output:
+[
+    ['user_id' => 1, 'name' => 'John Doe', 'photo_id' => 2, 'photo_url' => 'http://example.com/files/2014/xxxxx.png'],
+    ['user_id' => 2, 'name' => 'Mary Alice', 'photo_id' => 5, 'photo_url' => 'http://example.com/files/2014/xxxxx.png']
+];
+
+```
 
 ## Credits
 
