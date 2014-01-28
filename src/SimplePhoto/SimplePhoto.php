@@ -171,7 +171,7 @@ class SimplePhoto
 
         if ($uploadPath && $this->dataStore != null) {
             // Persist uploaded photo data
-            return $this->dataStore->addPhoto(array(
+            return (int) $this->dataStore->addPhoto(array(
                 'storageName' => $storageName,
                 'filePath' => $uploadPath,
                 'fileName' => $photoSource->getName(),

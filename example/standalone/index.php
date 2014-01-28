@@ -109,7 +109,7 @@ $data3 = array(
 $callback = function (&$item, $photo, $index, $name) {
     if ($index == 'photo_id') {
         $item['user_photo'] = $photo->url();
-    } else if ($index == 'cover_photo_id') {
+    } elseif ($index == 'cover_photo_id') {
         $item['cover_photo'] = $photo->url();
     }
 };

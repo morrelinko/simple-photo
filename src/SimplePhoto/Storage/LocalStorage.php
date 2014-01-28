@@ -201,8 +201,8 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * @param $path
-     * @param bool $createIfNotExists
+     * @param string $path
+     * @param   bool $createIfNotExists
      *
      * @return string
      * @throws \RuntimeException

@@ -130,11 +130,29 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($photoId > 0);
     }
 
+    public function testUploadFromPhpFileUpload()
+    {
+        // Mock uplaod _FILES
+        $_FILES['image'] = array(
+            'name' => '007.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => __DIR__ . '/../files/tmp/image_group.png',
+            'error' => 0,
+            'size' => 38028
+        );
+
+        $photoId = $this->simplePhoto->uploadFromPhpFileUpload($_FILES['image']);
+        $this->assertInternalType('int', $photoId);
+    }
+
     public function testUploadAndTransformSize()
     {
         // Same as $this->simplePhoto->uploadFromFilePath()
         $photoId = $this->simplePhoto->uploadFrom(
-            $this->photoSourceFile, new FilePathSource(), array());
+            $this->photoSourceFile,
+            new FilePathSource()
+        );
+
         $photo = $this->simplePhoto->get($photoId, array(
             'transform' => array(
                 'size' => array(50, 50)
@@ -164,7 +182,8 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         );
 
         $photoId = $this->simplePhoto->uploadFromFilePath(
-            $this->photoSourceFile, array(
+            $this->photoSourceFile,
+            array(
                 'transform' => $transform
             )
         );
@@ -197,14 +216,14 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     public function testGetInvalidPhotoWithFallback()
     {
         $this->initFallbackStorage();
-        $photo = $this->simplePhoto->get(5000000, array('fallback' => 'not_found.png'));
+        $photo = $this->simplePhoto->get(5000000, array('fallback' => 'not_found . png'));
         $this->assertNotSame(false, $photo);
     }
 
     public function testCollectionWithFallback()
     {
         $this->initFallbackStorage();
-        $photos = $this->simplePhoto->collection(array(1, 2, 3, 4), array('fallback' => 'not_found.png'));
+        $photos = $this->simplePhoto->collection(array(1, 2, 3, 4), array('fallback' => 'not_found . png'));
         $this->assertContainsOnlyInstancesOf('SimplePhoto\\PhotoResult', $photos->all());
         $this->assertInstanceOf('SimplePhoto\\PhotoResult', $photos->get(1));
         $this->assertEquals(4, count($photos));
@@ -213,7 +232,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     public function testCollectionFilterWithFallback()
     {
         $this->initFallbackStorage();
-        $photos = $this->simplePhoto->collection(array(200, 202, 423, 352), array('fallback' => 'not_found.png'));
+        $photos = $this->simplePhoto->collection(array(200, 202, 423, 352), array('fallback' => 'not_found . png'));
         $notFoundPhotos = $photos->filter(function ($photo) {
             /** @var $photo PhotoResult */
             return $photo->storage() == StorageManager::FALLBACK_STORAGE;
@@ -222,9 +241,119 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('SimplePhoto\\Toolbox\\PhotoCollection', $notFoundPhotos);
     }
 
+    public function testPushBasic()
+    {
+        $this->initFallbackStorage();
+
+        $original = array(
+            'user_id' => 1,
+            'username' => 'johndoe',
+            'photo_id' => 3,
+        );
+
+        $this->simplePhoto->push($original, array('photo_id'), null, array('fallback' => 'not_found . png'));
+
+        $this->assertArrayHasKey('photo', $original);
+        $this->assertInstanceOf('SimplePhoto\\PhotoResult', $original['photo']);
+    }
+
+    public function testPushBasicWithCallback()
+    {
+        $this->initFallbackStorage();
+
+        $original = array(
+            'user_id' => 1,
+            'username' => 'johndoe',
+            'photo_id' => 400,
+        );
+
+        $this->simplePhoto->push(
+            $original,
+            array('photo_id'),
+            function (&$item, $photo) {
+                /** @var $photo \SimplePhoto\PhotoResult */
+                $item['photo_url'] = $photo->url();
+            },
+            array('fallback' => 'not_found . png')
+        );
+
+        $this->assertArrayHasKey('photo_url', $original);
+    }
+
+    public function testPushToMultiDimensionalArray()
+    {
+        $this->initFallbackStorage();
+        $original = array(
+            array(
+                'user_id' => 1,
+                'username' => 'johndoe',
+                'photo_id' => 400,
+            ),
+            array(
+                'user_id' => 2,
+                'username' => 'maryalice',
+                'photo_id' => 401,
+            )
+        );
+
+        $this->simplePhoto->push($original, array('photo_id'));
+        $this->assertArrayHasKey('photo', $original[0]);
+        $this->assertArrayHasKey('photo', $original[1]);
+    }
+
+    public function testPushMultiplePhotoIdColumns()
+    {
+        $this->initFallbackStorage();
+
+        $original = array(
+            'user_id' => 1,
+            'username' => 'johndoe',
+            'photo_id' => 200,
+            'cover_photo_id' => 100
+        );
+
+        $this->simplePhoto->push(
+            $original,
+            array('photo_id', 'cover_photo_id'),
+            null,
+            array('fallback' => 'not_found . png')
+        );
+
+        $this->assertArrayHasKey('photo', $original);
+        $this->assertArrayHasKey('cover_photo', $original);
+    }
+
+    public function testPushMultiplePhotoIdColumnsWithCallback()
+    {
+        $this->initFallbackStorage();
+        $original = array(
+            'user_id' => 1,
+            'username' => 'johndoe',
+            'photo_id' => 200,
+            'cover_photo_id' => 100
+        );
+
+        $this->simplePhoto->push(
+            $original,
+            array('photo_id', 'cover_photo_id'),
+            function (&$item, $photo, $index) {
+                /** @var $photo \SimplePhoto\PhotoResult */
+                if ($index == 'photo_id') {
+                    $item['photo_url'] = $photo->url();
+                } elseif ($index == 'cover_photo_id') {
+                    $item['cover_photo_url'] = $photo->url();
+                }
+            },
+            array('fallback' => 'not_found . png')
+        );
+
+        $this->assertArrayHasKey('photo_url', $original);
+        $this->assertArrayHasKey('cover_photo_url', $original);
+    }
+
     private function initFallbackStorage()
     {
-        $fallbackStorage = new LocalStorage(__DIR__ . '/..', 'files/default', $this->mockBaseUrlImpl);
+        $fallbackStorage = new LocalStorage(__DIR__ . ' /..', 'files /default', $this->mockBaseUrlImpl);
         $this->simplePhoto->getStorageManager()->setFallback($fallbackStorage);
     }
 }

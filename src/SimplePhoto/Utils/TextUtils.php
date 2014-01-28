@@ -16,6 +16,14 @@ namespace SimplePhoto\Utils;
  */
 class TextUtils
 {
+    /**
+     * Checks if a string ends with a sequence of characters
+     *
+     * @param string $text
+     * @param string $char
+     *
+     * @return bool
+     */
     public static function endsWith($text, $char)
     {
         return substr($text, -(strlen($char))) == $char;

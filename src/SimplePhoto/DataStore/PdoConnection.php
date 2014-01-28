@@ -61,6 +61,11 @@ abstract class PdoConnection
         $this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
+    /**
+     * @param array $connection
+     *
+     * @return mixed
+     */
     abstract public function createConnection($connection);
 
     /**
@@ -85,7 +90,10 @@ abstract class PdoConnection
             )
         ';
 
-        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
+
         $statement->execute($values);
 
         return $this->db->lastInsertId();
@@ -104,7 +112,10 @@ abstract class PdoConnection
             WHERE photo_id = :photoId
         ';
 
-        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
+
         $statement->execute(compact('photoId'));
 
         if ($photo = $statement->fetch(\PDO::FETCH_ASSOC)) {
@@ -128,7 +139,10 @@ abstract class PdoConnection
             WHERE photo_id IN (' . $ids . ')
         ';
 
-        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
+
         $statement->execute($photoIds);
 
         if ($photos = $statement->fetchAll(\PDO::FETCH_ASSOC)) {
@@ -149,7 +163,9 @@ abstract class PdoConnection
         ';
 
         // Delete from database
-        $statement = $this->db->prepare(sprintf($sql, $this->options['photo_table']));
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
 
         return $statement->execute(compact('photoId'));
     }
