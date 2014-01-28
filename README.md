@@ -6,7 +6,7 @@ Photo uploading and management made easy
 
 ## Installation
 
-Through Composer
+Through [Composer](http://getcomposer.org)
 
 ```json
 {
@@ -76,12 +76,15 @@ $photo = $simplePhoto->get($photoId, [
 ```
 
 All transformation options available...
+
 ```php
 [
-    'size' => [100, 100]
-    'rotate' => [45]
+    'size' => [$width, $height]
+    'rotate' => [$angle, ($background)]
 ]
 ```
+
+Arguments in brackets are optional
 
 ## Collection of photos
 
