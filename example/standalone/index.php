@@ -1,6 +1,6 @@
 <?php
 
-require_once '../../autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 // (Basic) Setup (this must have been done somewhere in your script so that it can be reused throughout your app)
 $storageManager = new \SimplePhoto\StorageManager();
@@ -16,7 +16,7 @@ $dataStore = new \SimplePhoto\DataStore\SqliteDataStore(array(
 ));
 
 $dataStore->getConnection()->exec("
-    CREATE TABLE IF NOT EXISTS photos (
+    CREATE TABLE IF NOT EXISTS photo (
         photo_id INTEGER PRIMARY KEY,
         storage_name TEXT NOT NULL,
         file_name TEXT NOT NULL,
@@ -41,11 +41,11 @@ if (isset($_POST['upload']) && isset($_FILES['image'])) {
     echo '<img src="' . $simplePhoto->get($photoId)->url() . '" />';
 }
 
-$statement = $dataStore->getConnection()->prepare('SELECT * FROM photos');
+$statement = $dataStore->getConnection()->prepare('SELECT * FROM photo');
 $statement->execute();
 
 foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
-    var_dump($simplePhoto->get($photo['photo_id']));
+    // var_dump($simplePhoto->get($photo['photo_id']));
 }
 
 // Delete Photo
@@ -56,16 +56,99 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
 
 // Get a photo Resized
 
-/**
- * if ($resize = $simplePhoto->get(1, array(
- * 'transform' => array(
- * 'size' => array(200, 200)
- * )
- * ))
- * ) {
- * echo '<img src="' . $resize->url() . '" />';
- * }
- * /**/
+/**/
+if ($resize = $simplePhoto->get(1, array(
+    'transform' => array(
+        'size' => array(100, 100),
+        'rotate' => array(180)
+    )
+))
+) {
+    echo '<img src="' . $resize->url() . '" />';
+}
+
+//var_dump($resize);
+/**/
+
+$photos = $simplePhoto->collection([3, 2, 1, 4, 5], [
+    'fallback' => 'not_found.png'
+]);
+// var_dump($photos);
+
+$data = array(
+    'user_id' => 4,
+    'username' => 'morrelinko',
+    'photo_id' => 1,
+    'cover_photo_id' => 2
+);
+
+$data2 = array(
+    'user_id' => 4,
+    'username' => 'morrelinko',
+    'photo_id' => 1,
+);
+
+$data3 = array(
+    array(
+        'user_id' => 4,
+        'username' => 'morrelinko',
+        'photo_id' => 1,
+    ),
+    array(
+        'user_id' => 4,
+        'username' => 'morrelinko',
+        'photo_id' => 1,
+    ),
+    array(
+        'user_id' => 4,
+        'username' => 'morrelinko',
+        'photo_id' => 1,
+    )
+);
+
+$callback = function (&$item, $photo, $index, $name) {
+    if ($index == 'photo_id') {
+        $item['user_photo'] = $photo->url();
+    } elseif ($index == 'cover_photo_id') {
+        $item['cover_photo'] = $photo->url();
+    }
+};
+
+$options = array('fallback' => 'not_found.png');
+
+$simplePhoto->push(
+    $data,
+    array('photo_id', 'cover_photo_id'),
+    null,
+    $options
+);
+
+
+$simplePhoto->push($data2, array(), function ($item, $photo) {
+    /** @var $photo SimplePhoto\PhotoResult */
+    $item['photo_url'] = $photo->url();
+});
+
+$simplePhoto->push($data3, array('photo_id'), null, $options);
+
+//var_dump($data);
+//var_dump($data2);
+var_dump($data3);
+
+$localPhotos = $photos->filter(function ($photo) {
+    /** @var $photo SimplePhoto\PhotoResult */
+    return $photo->storage() == 'local';
+});
+
+$notFoundPhotos = $photos->filter(function ($photo) {
+    /** @var $photo SimplePhoto\PhotoResult */
+    return $photo->storage() == \SimplePhoto\StorageManager::FALLBACK_STORAGE;
+});
+
+// var_dump($photos);
+
+// var_dump($localPhotos);
+//var_dump($notFoundPhotos);
 ?>
 
 <form method="post" enctype="multipart/form-data">

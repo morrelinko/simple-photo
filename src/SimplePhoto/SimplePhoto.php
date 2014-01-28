@@ -11,13 +11,14 @@
 
 namespace SimplePhoto;
 
+use Imagine\Gd\Imagine;
+use Imagine\Image\Box;
 use SimplePhoto\DataStore\DataStoreInterface;
 use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
-use SimplePhoto\Toolbox\Image;
-use SimplePhoto\Toolbox\ImageTransformer;
+use SimplePhoto\Toolbox\PhotoCollection;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -44,10 +45,11 @@ class SimplePhoto
      *
      * @param StorageManager $storageManager
      * @param DataStoreInterface $dataStore
-     * @param array $options
      */
-    public function __construct(StorageManager $storageManager = null, DataStoreInterface $dataStore = null, $options = array())
-    {
+    public function __construct(
+        StorageManager $storageManager = null,
+        DataStoreInterface $dataStore = null
+    ) {
         if ($storageManager != null) {
             $this->setStorageManager($storageManager);
         }
@@ -99,7 +101,7 @@ class SimplePhoto
      */
     public function uploadFromPhpFileUpload($photoData, array $options = array())
     {
-        return $this->uploadFrom($photoData, $options, new PhpFileUploadSource());
+        return $this->uploadFrom($photoData, new PhpFileUploadSource(), $options);
     }
 
     /**
@@ -112,7 +114,7 @@ class SimplePhoto
      */
     public function uploadFromFilePath($photoData, array $options = array())
     {
-        return $this->uploadFrom($photoData, $options, new FilePathSource());
+        return $this->uploadFrom($photoData, new FilePathSource(), $options);
     }
 
     /**
@@ -130,8 +132,8 @@ class SimplePhoto
      */
     public function uploadFrom(
         $photoData,
-        array $options = array(),
-        PhotoSourceInterface $photoSource
+        PhotoSourceInterface $photoSource,
+        array $options = array()
     ) {
         /**
          * @var array $transform
@@ -145,6 +147,7 @@ class SimplePhoto
         $photoSource->process($photoData);
         $saveName = $this->generateOriginalSaveName($photoSource->getName());
         $storage = $this->getStorageManager()->get($storageName);
+        $fileMime = $this->getFileMime($photoSource->getFile());
 
         if ($transform) {
             // If we are to perform photo transformation during upload,
@@ -154,6 +157,7 @@ class SimplePhoto
                 $storage,
                 $photoSource->getFile(),
                 $saveName,
+                $fileMime,
                 $transform
             );
         } else {
@@ -167,12 +171,12 @@ class SimplePhoto
 
         if ($uploadPath && $this->dataStore != null) {
             // Persist uploaded photo data
-            return $this->dataStore->addPhoto(array(
+            return (int) $this->dataStore->addPhoto(array(
                 'storageName' => $storageName,
                 'filePath' => $uploadPath,
                 'fileName' => $photoSource->getName(),
                 'fileExtension' => pathinfo($photoSource->getName(), PATHINFO_EXTENSION),
-                'fileMime' => $this->getFileMime($photoSource->getFile()),
+                'fileMime' => $fileMime,
             ));
         }
 
@@ -181,74 +185,63 @@ class SimplePhoto
 
     /**
      * @param int $photoId PhotoID
-     * @param array $options Available options
-     * <pre>
-     * fallback: A fallback photo to use when photo is not found
-     * transform: Transformation options to be applied to photo
-     * </pre>
+     * @param array $options
+     *
+     * @see SimplePhoto::build()
      *
      * @return PhotoResult|false Returns false if photo is not
      * found and no fallback photo setup & defined
      */
     public function get($photoId, array $options = array())
     {
-        $options = array_merge(array(
-            'transform' => array(),
-            'fallback' => null,
-        ), $options);
-
         $photo = $this->dataStore->getPhoto($photoId);
 
-        if (empty($photo)) {
-            // Could not find photo data
-            if (
-                $options['fallback'] == null ||
-                !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)
-            ) {
-                // If default is not set, then no default photo is available
-                return false;
-            }
+        return $this->build($photo, $options);
+    }
 
-            // Construct default data
-            $photo = array(
-                'photo_id' => 0,
-                'storage_name' => StorageManager::FALLBACK_STORAGE,
-                'file_name' => pathinfo($options['default'], PATHINFO_FILENAME),
-                'file_path' => $options['default'],
-                'file_mime' => null,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            );
+    /**
+     * Gets multiple photos
+     *
+     * @param array $ids List of photo ids
+     * @param array $options
+     *
+     * @see SimplePhoto::build()
+     *
+     * @return mixed|PhotoCollection
+     */
+    public function collection(array $ids, array $options = array())
+    {
+        $photos = $this->dataStore->getPhotos($ids);
+
+        if (empty($photos) && !$this->storageManager->hasFallback()) {
+            // If no fallback has been defined, and no photo was found
+            // lets just skip the computation that follows.
+            return $this->createPhotoCollection();
         }
 
-        $photoResult = new PhotoResult($photo);
-        $storage = $this->storageManager->get($photo['storage_name']);
+        $found = array();
+        array_map(function ($photo) use ($ids, &$found) {
+            // This will be used to build found Photos
+            return $found[$photo['photo_id']] = $photo;
+        }, $photos);
 
-        if (!empty($options['transform'])) {
-            // Transformation options available
-            $modifiedFileName = $this->generateModifiedSaveName(
-                $photo['file_path'], $options['transform']);
-            $photoResult->setOriginalFilePath($photo['file_path']);
-            $photoResult->setOriginalPath($storage->getPhotoPath($photo['file_path']));
-
-            if (!$storage->exists($modifiedFileName)) {
-                // Only do image manipulation once
-                // (ie if file does not exists)
-                $modifiedFileName = $this->transformPhoto(
-                    $storage,
-                    $photoResult->originalFilePath(),
-                    $modifiedFileName,
-                    $options['transform']);
+        $sorted = array();
+        foreach ($ids as $index => $id) {
+            $photo = array();
+            if (array_key_exists($id, $found)) {
+                $photo = $found[$id];
             }
 
-            // Set the file path to the new modified photo path
-            $photoResult->setFilePath($modifiedFileName);
+            $sorted[$index] = $photo;
         }
 
-        $photoResult->setPath($storage->getPhotoPath($photoResult->filePath()));
-        $photoResult->setUrl($storage->getPhotoUrl($photoResult->filePath()));
+        $photos = $this->createPhotoCollection($sorted);
+        $simplePhoto = $this; // php 5.3 compatibility
+        $photos->transform(function ($photo) use ($simplePhoto, $options) {
+            return $simplePhoto->build($photo, $options);
+        })->ksort();
 
-        return $photoResult;
+        return $photos;
     }
 
     /**
@@ -279,9 +272,147 @@ class SimplePhoto
     }
 
     /**
+     * Push `PhotoResult` item to an array/iterator
+     *
+     * @param array|\Iterator $haystack List of items
+     * @param array $keys Key names containing photo ID
+     * @param callable $callback (Optional) Callback to use for building
+     * items to push into the array
+     * @param array $options Photo options
+     *
+     * @see build()
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function push(&$haystack, array $keys = array(), \Closure $callback = null, array $options = array())
+    {
+        if ($haystack instanceof \Iterator) {
+            $haystack = iterator_to_array($haystack, true);
+        }
+
+        if (!is_array($haystack)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Argument 1 passed to %s must be an array
+                 or implement interface \Iterator',
+                __METHOD__
+            ));
+        }
+
+        // Generate an array of index that will
+        // be pushed to the original array
+        $keys = empty($keys) ? array('photo_id' => 'photo') : $keys;
+        foreach ($keys as $index => $name) {
+            if (is_int($index)) {
+                unset($keys[$index]);
+                $keys[$name] = substr($name, 0, -3); // Remove '_id'
+            }
+        }
+
+        if ($callback == null) {
+            $callback = function (&$item, $photo, $index, $name) use ($keys) {
+                $item[$name] = $photo;
+
+                return $item;
+            };
+        }
+
+        if (array_values($haystack) === $haystack) {
+            // This array is a list
+            foreach ($keys as $index => $name) {
+                // Get list of photo ids
+                $ids = $this->arrayColumn($haystack, $index);
+                $photos = $this->collection($ids, $options);
+                foreach ($haystack as $key => $item) {
+                    $callback($haystack[$key], $photos->get($key), $index, $name);
+                }
+            }
+        } else {
+            foreach ($keys as $index => $name) {
+                $photo = $this->get($haystack[$index], $options);
+                $callback($haystack, $photo, $index, $name);
+            }
+        }
+    }
+
+    /**
+     * @param array $photo
+     * @param array $photo Photo data
+     * @param array $options Available options
+     * <pre>
+     * fallback: A fallback photo to use when photo is not found
+     * transform: Transformation options to be applied to photo
+     * </pre>
+     *
+     * @return bool|PhotoResult
+     */
+    public function build(array $photo, array $options = array())
+    {
+        $options = array_merge(array(
+            'transform' => array(),
+            'fallback' => null,
+        ), $options);
+
+        if (empty($photo)) {
+            // Could not find photo data
+            if ($options['fallback'] == null ||
+                !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)
+            ) {
+                // If default is not set, then no default photo is available
+                return false;
+            }
+
+            // Construct default data
+            $photo = array(
+                'photo_id' => 0,
+                'storage_name' => StorageManager::FALLBACK_STORAGE,
+                'file_name' => pathinfo($options['fallback'], PATHINFO_FILENAME),
+                'file_path' => $options['fallback'],
+                'file_mime' => 'image/png', // Look into this
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            );
+        }
+
+        $photoResult = new PhotoResult($photo);
+        $storage = $this->storageManager->get($photo['storage_name']);
+
+        if (!empty($options['transform'])) {
+            // Transformation options available
+            $modifiedFileName = $this->generateModifiedSaveName(
+                $photo['file_path'],
+                $options['transform']
+            );
+
+            $photoResult->setOriginalFilePath($photo['file_path']);
+            $photoResult->setOriginalPath($storage->getPhotoPath($photo['file_path']));
+
+            if (!$storage->exists($modifiedFileName)) {
+                // Only do image manipulation once
+                // (ie if file does not exists)
+                $modifiedFileName = $this->transformPhoto(
+                    $storage,
+                    $photoResult->originalFilePath(),
+                    $modifiedFileName,
+                    $photo['file_mime'],
+                    $options['transform']
+                );
+            }
+
+            // Set the file path to the new modified photo path
+            $photoResult->setFilePath($modifiedFileName);
+        }
+
+        $photoResult->setPath($storage->getPhotoPath($photoResult->filePath()));
+        $photoResult->setUrl($storage->getPhotoUrl($photoResult->filePath()));
+
+        return $photoResult;
+    }
+
+    /**
      * @param StorageInterface $storage
      * @param string $originalFile
      * @param string $modifiedFile
+     * @param string $mimeType
      * @param array $transform
      *
      * @return string|bool Modified file if successful or false otherwise
@@ -290,6 +421,7 @@ class SimplePhoto
         StorageInterface $storage,
         $originalFile,
         $modifiedFile,
+        $mimeType,
         array $transform = array()
     ) {
         if (!$storage->exists($originalFile)) {
@@ -298,15 +430,24 @@ class SimplePhoto
 
         // Load image for manipulation
         $tmpFile = $storage->getPhotoResource($originalFile);
-        $imageTransformer = new ImageTransformer($tmpFile, new Image());
+        $imagine = new Imagine();
+        $transformer = $imagine->open($tmpFile);
 
         // Start transforming
         if (isset($transform['size'])) {
             list($width, $height) = $transform['size'];
-            $imageTransformer->resize($width, $height);
+            $transformer->resize(new Box($width, $height));
         }
 
-        $imageTransformer->save($tmpFile);
+        if (isset($transform['rotate'])) {
+            list($angle, $background) = array_pad($transform['rotate'], 2, null);
+            $transformer->rotate((int) $angle, $background);
+        }
+
+        $transformer->save($tmpFile, array(
+            'format' => $this->getSaveFormat($mimeType)
+        ));
+
         if ($storage->upload($tmpFile, $modifiedFile)) {
             unlink($tmpFile);
 
@@ -343,6 +484,11 @@ class SimplePhoto
             $newName .= implode('x', $transform['size']);
         }
 
+        if (isset($transform['rotate'][0])) {
+            // We only need the angle for the name
+            $newName .= sprintf('-r%s', $transform['rotate'][0]);
+        }
+
         // Extract information from original file
         $directory = dirname($oldName);
         $originalName = pathinfo($oldName, PATHINFO_FILENAME);
@@ -362,5 +508,55 @@ class SimplePhoto
         $mime = finfo_file($fileInfo, $file);
 
         return !empty($mime) ? $mime : null;
+    }
+
+    /**
+     * Gets the format that will be used for saving the photo
+     *
+     * @param string $mime
+     *
+     * @return string
+     */
+    private function getSaveFormat($mime)
+    {
+        $format = 'png';
+        switch ($mime) {
+            case 'image/jpg':
+            case 'image/jpeg':
+                $format = 'jpeg';
+                break;
+            case 'image/gif':
+                $format = 'gif';
+                break;
+            case 'image/png':
+                $format = 'png';
+                break;
+        }
+
+        return $format;
+    }
+
+    /**
+     * @param array $array
+     * @param $index
+     *
+     * @return array
+     */
+    private function arrayColumn(array $array, $index)
+    {
+        //$values = function_exists('array_column') ? array_column($array, $index) : array();
+        return array_map(function ($item) use ($index) {
+            return $item[$index];
+        }, $array);
+    }
+
+    /**
+     * @param array $photos
+     *
+     * @return PhotoCollection
+     */
+    private function createPhotoCollection(array $photos = array())
+    {
+        return new PhotoCollection($photos);
     }
 }

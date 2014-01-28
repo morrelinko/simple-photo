@@ -116,8 +116,9 @@ class LocalStorage implements StorageInterface
             $this->baseUrlImpl = new HttpBaseUrl();
         }
 
-        $path = FileUtils::normalizePath($this->projectRoot . '/' . $this->savePath . '/' .
-            ltrim(preg_replace('!^' . $this->projectRoot . '/?!', '', $file), '/'));
+        $basePath = $this->projectRoot . '/' . $this->savePath;
+        $filePath = ltrim(preg_replace('!^' . $this->projectRoot . '/?!', '', $file), '/');
+        $path = FileUtils::normalizePath($basePath . '/' . $filePath);
 
         return rtrim(str_replace($this->projectRoot, $this->baseUrlImpl->getBaseUrl(), $path), '/');
     }
@@ -200,8 +201,8 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * @param $path
-     * @param bool $createIfNotExists
+     * @param string $path
+     * @param   bool $createIfNotExists
      *
      * @return string
      * @throws \RuntimeException

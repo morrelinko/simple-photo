@@ -37,7 +37,7 @@ abstract class PdoConnection
     public function __construct($connection, array $options = array())
     {
         $this->options = array_merge(array(
-            'photo_table' => 'photos'
+            'photo_table' => 'photo'
         ), $options);
 
         if (!$connection instanceof \PDO) {
@@ -61,6 +61,11 @@ abstract class PdoConnection
         $this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
+    /**
+     * @param array $connection
+     *
+     * @return mixed
+     */
     abstract public function createConnection($connection);
 
     /**
@@ -76,14 +81,18 @@ abstract class PdoConnection
      */
     public function addPhoto(array $values)
     {
-        $statement = $this->db->prepare(sprintf('
+        $sql = '
             INSERT INTO %s (
                 storage_name, file_name, file_extension, file_path, file_mime
             )
             VALUES (
                 :storageName, :fileName, :fileExtension, :filePath, :fileMime
             )
-        ', $this->options['photo_table']));
+        ';
+
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
 
         $statement->execute($values);
 
@@ -95,13 +104,17 @@ abstract class PdoConnection
      */
     public function getPhoto($photoId)
     {
-        $statement = $this->db->prepare(sprintf('
+        $sql = '
             SELECT
                 photo_id, storage_name, file_name, file_path,
                 file_extension, file_mime, created_at, updated_at
             FROM %s
             WHERE photo_id = :photoId
-        ', $this->options['photo_table']));
+        ';
+
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
 
         $statement->execute(compact('photoId'));
 
@@ -115,13 +128,44 @@ abstract class PdoConnection
     /**
      * {@inheritDocs}
      */
+    public function getPhotos(array $photoIds)
+    {
+        $ids = str_repeat('?, ', count($photoIds)) . '?';
+        $sql = '
+            SELECT
+                photo_id, storage_name, file_name, file_path,
+                file_extension, file_mime, created_at, updated_at
+            FROM %s
+            WHERE photo_id IN (' . $ids . ')
+        ';
+
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
+
+        $statement->execute($photoIds);
+
+        if ($photos = $statement->fetchAll(\PDO::FETCH_ASSOC)) {
+            return $photos;
+        }
+
+        return array();
+    }
+
+    /**
+     * {@inheritDocs}
+     */
     public function deletePhoto($photoId)
     {
-        // Delete from database
-        $statement = $this->db->prepare(sprintf('
+        $sql = '
             DELETE FROM %s
             WHERE photo_id = :photoId
-        ', $this->options['photo_table']));
+        ';
+
+        // Delete from database
+        $statement = $this->db->prepare(
+            sprintf($sql, $this->options['photo_table'])
+        );
 
         return $statement->execute(compact('photoId'));
     }

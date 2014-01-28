@@ -10,11 +10,11 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="./test/bootstrap.php">
+         bootstrap="./tests/bootstrap.php">
 
     <testsuites>
         <testsuite name="SimplePhoto Test Suit">
-            <directory phpVersion="5.3.0">./test/SimplePhoto</directory>
+            <directory phpVersion="5.3.0">./tests/SimplePhoto</directory>
         </testsuite>
     </testsuites>
 

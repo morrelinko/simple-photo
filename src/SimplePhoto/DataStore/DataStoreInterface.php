@@ -38,6 +38,13 @@ interface DataStoreInterface
     public function getPhoto($photoId);
 
     /**
+     * @param array $photoIds
+     *
+     * @return mixed
+     */
+    public function getPhotos(array $photoIds);
+
+    /**
      * @param int $photoId
      *
      * @return boolean
