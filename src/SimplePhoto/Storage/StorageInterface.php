@@ -17,13 +17,13 @@ namespace SimplePhoto\Storage;
 interface StorageInterface
 {
     /**
-     * @param string $source File source
+     * @param string $file Source file
      * @param string $name File name
      * @param array $options
      *
      * @return mixed
      */
-    public function upload($source, $name, array $options = array());
+    public function upload($file, $name, array $options = array());
 
     /**
      * Delete photo file

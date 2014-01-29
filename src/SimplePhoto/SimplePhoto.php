@@ -155,7 +155,7 @@ class SimplePhoto
             // as the original image
             $uploadPath = $this->transformPhoto(
                 $storage,
-                $photoSource->getFile(),
+                $this->temp($photoSource->getFile()),
                 $saveName,
                 $fileMime,
                 $transform
@@ -391,7 +391,7 @@ class SimplePhoto
                 // (ie if file does not exists)
                 $modifiedFileName = $this->transformPhoto(
                     $storage,
-                    $photoResult->originalFilePath(),
+                    $storage->getPhotoResource($photoResult->originalFilePath()),
                     $modifiedFileName,
                     $photo['file_mime'],
                     $options['transform']
@@ -410,7 +410,7 @@ class SimplePhoto
 
     /**
      * @param StorageInterface $storage
-     * @param string $originalFile
+     * @param string $tmpFile
      * @param string $modifiedFile
      * @param string $mimeType
      * @param array $transform
@@ -419,17 +419,12 @@ class SimplePhoto
      */
     private function transformPhoto(
         StorageInterface $storage,
-        $originalFile,
+        $tmpFile,
         $modifiedFile,
         $mimeType,
         array $transform = array()
     ) {
-        if (!$storage->exists($originalFile)) {
-            return $originalFile;
-        }
-
         // Load image for manipulation
-        $tmpFile = $storage->getPhotoResource($originalFile);
         $imagine = new Imagine();
         $transformer = $imagine->open($tmpFile);
 
@@ -508,6 +503,19 @@ class SimplePhoto
         $mime = finfo_file($fileInfo, $file);
 
         return !empty($mime) ? $mime : null;
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return string
+     */
+    private function temp($file)
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'up');
+        copy($file, $tmpFile);
+
+        return $tmpFile;
     }
 
     /**

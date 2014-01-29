@@ -23,15 +23,16 @@ class FileUtils
      * - Parses ../ and ./ paths fine
      *
      * @param string $path
+     * @param boolean $fixAbsolute
      *
      * @return string
      */
-    public static function normalizePath($path)
+    public static function normalizePath($path, $fixAbsolute = true)
     {
         $path = str_replace('\\', '/', $path);
         $parts = array_filter(explode('/', $path), 'strlen');
         $isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-        $realPath = (self::isAbsolute($path) && !$isWin) ? '/' : '';
+        $realPath = (self::isAbsolute($path) && !$isWin && $fixAbsolute) ? '/' : '';
         $fixedParts = array();
 
         foreach ($parts as $part) {

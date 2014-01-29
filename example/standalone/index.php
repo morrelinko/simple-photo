@@ -5,6 +5,13 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 // (Basic) Setup (this must have been done somewhere in your script so that it can be reused throughout your app)
 $storageManager = new \SimplePhoto\StorageManager();
 $storageManager->add('local', new \SimplePhoto\Storage\LocalStorage(__DIR__, './files/photos'));
+$storageManager->add('static_host', new \SimplePhoto\Storage\RemoteHostStorage('photos', '127.0.0.1', array(
+    'port' => 21,
+    'username' => 'morrelinko',
+    'password' => '123456',
+    'root' => '/',
+    'url' => 'http://localhost/project/packages'
+)));
 
 // (Advance) Adding fallback storage for getting default photos that do not exists
 // $storageManager->add(\SimplePhoto\StorageManager::FALLBACK_STORAGE, new \SimplePhoto\Storage\LocalStorage(__DIR__, './file/defaults'));
@@ -33,6 +40,7 @@ $simplePhoto = new \SimplePhoto\SimplePhoto($storageManager, $dataStore);
 // Upload
 if (isset($_POST['upload']) && isset($_FILES['image'])) {
     $photoId = $simplePhoto->uploadFromPhpFileUpload($_FILES['image'], array(
+        'storageName' => isset($_POST['storage']) ? $_POST['storage'] : 'local',
         'transform' => array(
             'size' => array(100, 100)
         )
@@ -45,7 +53,7 @@ $statement = $dataStore->getConnection()->prepare('SELECT * FROM photo');
 $statement->execute();
 
 foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
-    // var_dump($simplePhoto->get($photo['photo_id']));
+    var_dump($simplePhoto->get($photo['photo_id']));
 }
 
 // Delete Photo
@@ -126,23 +134,23 @@ $simplePhoto->push(
 
 $simplePhoto->push($data2, array(), function ($item, $photo) {
     /** @var $photo SimplePhoto\PhotoResult */
-    $item['photo_url'] = $photo->url();
+    //$item['photo_url'] = $photo->url();
 });
 
 $simplePhoto->push($data3, array('photo_id'), null, $options);
 
 //var_dump($data);
 //var_dump($data2);
-var_dump($data3);
+//var_dump($data3);
 
 $localPhotos = $photos->filter(function ($photo) {
     /** @var $photo SimplePhoto\PhotoResult */
-    return $photo->storage() == 'local';
+    //return $photo->storage() == 'local';
 });
 
 $notFoundPhotos = $photos->filter(function ($photo) {
     /** @var $photo SimplePhoto\PhotoResult */
-    return $photo->storage() == \SimplePhoto\StorageManager::FALLBACK_STORAGE;
+    //return $photo->storage() == \SimplePhoto\StorageManager::FALLBACK_STORAGE;
 });
 
 // var_dump($photos);
@@ -153,5 +161,15 @@ $notFoundPhotos = $photos->filter(function ($photo) {
 
 <form method="post" enctype="multipart/form-data">
     <input type="file" name="image">
+
+    <br />
+    Select Storage: <br />
+    <select name="storage">
+        <?php foreach ($storageManager->getAll() as $name => $storage): ?>
+            <option value="<?php echo $name; ?>">
+                <?php echo $name; ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
     <button name="upload">Upload Image</button>
 </form>
