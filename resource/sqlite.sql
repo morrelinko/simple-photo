@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS photo (
     "file_extension" TEXT NOT NULL,
     "file_path" TEXT NOT NULL,
     "file_mime" TEXT NOT NULL,
-    "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP,
+    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" DATETIME DEFAULT CURRENT_TIMESTAMP
 );

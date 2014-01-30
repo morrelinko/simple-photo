@@ -45,7 +45,7 @@ $statement = $dataStore->getConnection()->prepare('SELECT * FROM photo');
 $statement->execute();
 
 foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
-    // var_dump($simplePhoto->get($photo['photo_id']));
+    var_dump($simplePhoto->get($photo['photo_id']));
 }
 
 // Delete Photo
@@ -70,9 +70,9 @@ if ($resize = $simplePhoto->get(1, array(
 //var_dump($resize);
 /**/
 
-$photos = $simplePhoto->collection([3, 2, 1, 4, 5], [
+$photos = $simplePhoto->collection(array(3, 2, 1, 4, 5), array(
     'fallback' => 'not_found.png'
-]);
+));
 // var_dump($photos);
 
 $data = array(
@@ -126,14 +126,14 @@ $simplePhoto->push(
 
 $simplePhoto->push($data2, array(), function ($item, $photo) {
     /** @var $photo SimplePhoto\PhotoResult */
-    $item['photo_url'] = $photo->url();
+    //$item['photo_url'] = $photo->url();
 });
 
 $simplePhoto->push($data3, array('photo_id'), null, $options);
 
 //var_dump($data);
 //var_dump($data2);
-var_dump($data3);
+//var_dump($data3);
 
 $localPhotos = $photos->filter(function ($photo) {
     /** @var $photo SimplePhoto\PhotoResult */
