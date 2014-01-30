@@ -16,6 +16,11 @@ Through [Composer](http://getcomposer.org)
 }
 ```
 
+Create the database using the schema below for the data store you will be using
+
+* Sqlite DataStore: [Sql Query](https://github.com/morrelinko/simple-photo/blob/master/resource/sqlite.sql)
+* MySql DataStore: [Sql Query](https://github.com/morrelinko/simple-photo/blob/master/resource/mysql.sql)
+
 ## Uploading Photo
 
 ```php
@@ -29,10 +34,15 @@ $photoId = $simplePhoto->uploadFromFilePath("/path/to/photo.png");
 ```php
 $photo = $simplePhoto->get($photoId);
 
+$photo->id();
 $photo->url();
 $photo->path();
-$photo->fileMime();
+$photo->mime();
+$photo->storage();
+* $photo->fileSize();
 $photo->fileExtension();
+$photo->filePath();
+$photo->createdAt();
 ```
 
 ## Setup
@@ -154,6 +164,20 @@ var_dump($users);
 ];
 
 ```
+
+## Supported DataStores
+
+* MySql DataStore
+* Sqlite DataStore
+
+## Supported Storage
+
+* Local Storage
+
+## TODO
+
+* Add RemoteHost Storage
+* Add MongoDB Data Store
 
 ## Credits
 
