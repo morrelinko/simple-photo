@@ -78,9 +78,9 @@ if ($resize = $simplePhoto->get(1, array(
 //var_dump($resize);
 /**/
 
-$photos = $simplePhoto->collection([3, 2, 1, 4, 5], [
+$photos = $simplePhoto->collection(array(3, 2, 1, 4, 5), array(
     'fallback' => 'not_found.png'
-]);
+));
 // var_dump($photos);
 
 $data = array(

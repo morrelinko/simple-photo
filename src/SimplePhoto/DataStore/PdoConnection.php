@@ -81,12 +81,15 @@ abstract class PdoConnection
      */
     public function addPhoto(array $values)
     {
+        $values['createdAt'] = date("Y-m-d H:i:s");
+        $values['updatedAt'] = $values['createdAt'];
+
         $sql = '
             INSERT INTO %s (
-                storage_name, file_name, file_extension, file_path, file_mime
+                storage_name, file_name, file_extension, file_path, file_mime, created_at, updated_at
             )
             VALUES (
-                :storageName, :fileName, :fileExtension, :filePath, :fileMime
+                :storageName, :fileName, :fileExtension, :filePath, :fileMime, :createdAt, :updatedAt
             )
         ';
 

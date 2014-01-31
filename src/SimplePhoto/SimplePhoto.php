@@ -263,7 +263,7 @@ class SimplePhoto
         $storage = $this->storageManager->get($photo['storage_name']);
 
         if ($this->dataStore->deletePhoto($photoId)) {
-            if ($storage->deletePhoto($photo)) {
+            if ($storage->deletePhoto($photo['file_path'])) {
                 return true;
             }
         }

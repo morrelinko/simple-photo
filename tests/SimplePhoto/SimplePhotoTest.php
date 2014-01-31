@@ -1,4 +1,6 @@
-<?php namespace SimplePhoto;
+<?php
+
+namespace SimplePhoto;
 
 use SimplePhoto\DataStore\SqliteDataStore;
 use SimplePhoto\Source\FilePathSource;
@@ -197,6 +199,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPhoto()
     {
+        $date = date('Y-m-d H:i:s');
         $photoId = $this->simplePhoto->uploadFromFilePath($this->photoSourceFile);
 
         $photo = $this->simplePhoto->get($photoId);
@@ -204,6 +207,10 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($photo->id(), $photoId);
         $this->assertSame($photo->fileName(), 'image_group.png');
+        $this->assertSame($photo->fileExtension(), 'png');
+        $this->assertSame($photo->mime(), 'image/png');
+        $this->assertSame($photo->createdAt(), $date);
+        $this->assertSame($photo->updatedAt(), $date);
         $this->assertFileExists($photo->path());
     }
 
@@ -218,6 +225,24 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->initFallbackStorage();
         $photo = $this->simplePhoto->get(5000000, array('fallback' => 'not_found . png'));
         $this->assertNotSame(false, $photo);
+    }
+
+    public function testDeletePhoto()
+    {
+        $this->assertTrue($this->simplePhoto->delete(100));
+
+        $photoId = $this->simplePhoto->uploadFromFilePath($this->photoSourceFile);
+        $this->assertInstanceOf('SimplePhoto\PhotoResult', $this->simplePhoto->get($photoId));
+        $this->assertTrue($this->simplePhoto->delete($photoId));
+        $this->assertSame(false, $this->simplePhoto->get($photoId));
+    }
+
+    public function testEmptyCollection()
+    {
+        // This behaviour is expected as
+        // - these photos do not exists.
+        // - no fallback storage has been defined.
+        $this->assertCount(0, $this->simplePhoto->collection(array(100, 201, 302)));
     }
 
     public function testCollectionWithFallback()
@@ -349,6 +374,14 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
         $this->assertArrayHasKey('photo_url', $original);
         $this->assertArrayHasKey('cover_photo_url', $original);
+    }
+
+    public function testPushInvalidArgument()
+    {
+        $original = new \stdClass();
+
+        $this->setExpectedException('InvalidArgumentException');
+        $this->simplePhoto->push($original, array('photo_id'));
     }
 
     private function initFallbackStorage()
