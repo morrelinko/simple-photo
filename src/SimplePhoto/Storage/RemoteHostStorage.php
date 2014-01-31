@@ -41,11 +41,6 @@ class RemoteHostStorage implements StorageInterface
     /**
      * @var int
      */
-    protected $mode = FTP_BINARY;
-
-    /**
-     * @var int
-     */
     protected $port = 21;
 
     /**
@@ -104,11 +99,64 @@ class RemoteHostStorage implements StorageInterface
                 case 'password':
                     $this->password = $value;
                     break;
-                case 'mode':
-                    $this->mode = $value;
-                    break;
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoot()
+    {
+        return $this->root;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPort()
+    {
+        return $this->port;
     }
 
     /**
@@ -248,17 +296,13 @@ class RemoteHostStorage implements StorageInterface
     }
 
     /**
-     * @param $directory
+     * Checks if we have a valid Ftp connection
      *
      * @return bool
      */
-    protected function chdir($directory)
+    public function isConnected()
     {
-        if (@ftp_chdir($this->connection(), $directory) === false) {
-            return false;
-        }
-
-        return true;
+        return $this->connection != null;
     }
 
     /**
@@ -267,30 +311,35 @@ class RemoteHostStorage implements StorageInterface
      * @return resource
      * @throws \RuntimeException
      */
-    protected function connection()
+    public function connection()
     {
         if ($this->connection == null) {
-            // Open Ftp Connection
-            $this->connection = ftp_connect($this->host, $this->port);
-            if ($this->connection == null) {
-                throw new \RuntimeException(sprintf(
-                    'Could not connect to host \'%s\' on port: %s.',
-                    $this->host,
-                    $this->port
-                ));
-            }
-
-            // Login
-            if (ftp_login($this->connection, $this->username, $this->password) === false) {
-                $this->close();
-                throw new \RuntimeException(sprintf(
-                    'Unable to login as %s.',
-                    $this->username
-                ));
-            }
+            $this->connect();
         }
 
         return $this->connection;
+    }
+
+    public function connect()
+    {
+        // Open Ftp Connection
+        $this->connection = ftp_connect($this->host, $this->port);
+        if ($this->connection == null) {
+            throw new \RuntimeException(sprintf(
+                'Could not connect to host \'%s\' on port: %s.',
+                $this->host,
+                $this->port
+            ));
+        }
+
+        // Login
+        if (ftp_login($this->connection, $this->username, $this->password) === false) {
+            $this->close();
+            throw new \RuntimeException(sprintf(
+                'Unable to login as %s.',
+                $this->username
+            ));
+        }
     }
 
     /**
@@ -301,7 +350,7 @@ class RemoteHostStorage implements StorageInterface
      * @return bool
      * @throws \RuntimeException if the directory could not be created
      */
-    protected function createDirectory($directory)
+    public function createDirectory($directory)
     {
         // create parent directory if needed
         $parent = dirname($directory);
@@ -324,7 +373,7 @@ class RemoteHostStorage implements StorageInterface
      *
      * @return bool
      */
-    protected function directoryExists($directory)
+    public function directoryExists($directory)
     {
         if ($directory === '/') {
             return true;
@@ -335,6 +384,20 @@ class RemoteHostStorage implements StorageInterface
         }
 
         $this->chdir($this->path);
+
+        return true;
+    }
+
+    /**
+     * @param $directory
+     *
+     * @return bool
+     */
+    public function chdir($directory)
+    {
+        if (@ftp_chdir($this->connection(), $directory) === false) {
+            return false;
+        }
 
         return true;
     }
