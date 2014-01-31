@@ -28,14 +28,19 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $mockBaseUrlImpl = \Mockery::mock("SimplePhoto\\Toolbox\\BaseUrlInterface");
         $mockBaseUrlImpl->shouldReceive("getBaseUrl")->andReturn(self::BASE_URL);
 
-        $this->storage = new LocalStorage($this->projectPath, $this->savePath, $mockBaseUrlImpl);
+        $this->storage = new LocalStorage(
+            $this->projectPath,
+            $this->savePath,
+            $mockBaseUrlImpl
+        );
     }
 
     public function tearDown()
     {
         $this->storage = null;
         $uploadFile = FileUtils::normalizePath(
-            $this->projectPath . "/" . $this->savePath . "/" . self::TEST_UPLOAD_FILE);
+            $this->projectPath . "/" . $this->savePath . "/" . self::TEST_UPLOAD_FILE
+        );
         if (file_exists($uploadFile)) {
             unlink($uploadFile);
         }
@@ -43,14 +48,18 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testPath()
     {
+        $expected = $this->savePath;
         $this->assertFileExists($this->storage->getPath());
+        $this->assertSame($expected, $this->storage->getSavePath());
     }
 
     public function testGetPhotoData()
     {
         $photoUrl = self::BASE_URL . "/" . $this->savePath . "/" . self::TEST_UPLOAD_FILE;
         $photoPath = FileUtils::normalizePath(
-                $this->projectPath . "/" . $this->savePath) . "/" . self::TEST_UPLOAD_FILE;
+            $this->projectPath . "/" . $this->savePath
+        );
+        $photoPath .= "/" . self::TEST_UPLOAD_FILE;
 
         // Test getPhotoUrl()
         $this->assertSame($photoUrl, $this->storage->getPhotoUrl(self::TEST_UPLOAD_FILE));
@@ -64,7 +73,29 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $file = tempnam(sys_get_temp_dir(), null);
         $this->storage->upload($file, self::TEST_UPLOAD_FILE);
 
-        $this->assertFileExists(FileUtils::normalizePath(
-                $this->projectPath . "/" . $this->savePath) . "/" . self::TEST_UPLOAD_FILE);
+        $this->assertFileExists(
+            FileUtils::normalizePath(
+                $this->projectPath . "/" . $this->savePath
+            ) . "/" . self::TEST_UPLOAD_FILE
+        );
+    }
+
+    public function testUploadInvalidFile()
+    {
+        $file = 'path/to/unknown/file.png';
+        $this->setExpectedException('RuntimeException');
+        $this->storage->upload($file, 'some_dir/');
+    }
+
+    public function testVerifyPathExists()
+    {
+        $path = FileUtils::normalizePath(
+            $this->projectPath . '/' . $this->savePath
+        );
+
+        $this->assertSame($path, $this->storage->verifyPathExists($path));
+
+        $this->setExpectedException('RuntimeException');
+        $this->storage->verifyPathExists('some/invalid/directory', false);
     }
 }
