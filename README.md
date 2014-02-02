@@ -173,10 +173,10 @@ var_dump($users);
 ## Supported Storage
 
 * Local Storage
+* Remote Host Storage
 
 ## TODO
 
-* Add RemoteHost Storage [In Progress](https://github.com/morrelinko/simple-photo/tree/feature-remote-host-storage)
 * Add MongoDB Data Store
 
 ## Credits
