@@ -411,11 +411,9 @@ class RemoteHostStorage implements StorageInterface
      */
     protected function normalizePath($path, $withRoot = false, $withPath = true)
     {
-        $dir = null;
-        if (!FileUtils::isAbsolute($path)) {
-            $dir = $withPath ? $this->path . '/' : null;
-        }
+        $path = ($withRoot ? $this->root : null) .
+            FileUtils::normalizePath(($withPath ? $this->path . '/' : '') . '/' . $path);
 
-        return ($withRoot ? $this->root : null) . FileUtils::normalizePath('/' . $dir . $path);
+        return $path;
     }
 }
