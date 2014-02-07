@@ -20,6 +20,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
             storage_name TEXT NOT NULL,
             file_name TEXT NOT NULL,
             file_extension TEXT NOT NULL,
+            file_size TEXT NOT NULL DEFAULT "0",
             file_path TEXT NOT NULL,
             file_mime TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
