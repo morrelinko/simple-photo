@@ -21,12 +21,21 @@ class FilePathSource implements PhotoSourceInterface
      */
     protected $file;
 
+    public function __construct($file = null)
+    {
+        if ($file != null) {
+            $this->process($file);
+        }
+    }
+
     /**
      * {@inheritDocs}
      */
-    public function process($photoData)
+    public function process($file)
     {
-        $this->file = $photoData;
+        $this->file = $file;
+
+        return $this;
     }
 
     /**
