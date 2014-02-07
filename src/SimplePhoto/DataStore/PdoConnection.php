@@ -86,10 +86,10 @@ abstract class PdoConnection
 
         $sql = '
             INSERT INTO %s (
-                storage_name, file_name, file_extension, file_path, file_mime, created_at, updated_at
+                storage_name, file_name, file_extension, file_size, file_path, file_mime, created_at, updated_at
             )
             VALUES (
-                :storageName, :fileName, :fileExtension, :filePath, :fileMime, :createdAt, :updatedAt
+                :storageName, :fileName, :fileExtension, :fileSize, :filePath, :fileMime, :createdAt, :updatedAt
             )
         ';
 
@@ -110,7 +110,7 @@ abstract class PdoConnection
         $sql = '
             SELECT
                 photo_id, storage_name, file_name, file_path,
-                file_extension, file_mime, created_at, updated_at
+                file_extension, file_size, file_mime, created_at, updated_at
             FROM %s
             WHERE photo_id = :photoId
         ';
@@ -137,7 +137,7 @@ abstract class PdoConnection
         $sql = '
             SELECT
                 photo_id, storage_name, file_name, file_path,
-                file_extension, file_mime, created_at, updated_at
+                file_extension, file_size, file_mime, created_at, updated_at
             FROM %s
             WHERE photo_id IN (' . $ids . ')
         ';

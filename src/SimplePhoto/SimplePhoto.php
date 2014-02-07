@@ -153,7 +153,7 @@ class SimplePhoto
             // If we are to perform photo transformation during upload,
             // transformation specs are applied and the new photo is saved
             // as the original image
-            $uploadPath = $this->transformPhoto(
+            list($uploadPath, $fileSize) = $this->transformPhoto(
                 $storage,
                 $this->temp($photoSource->getFile()),
                 $saveName,
@@ -162,6 +162,7 @@ class SimplePhoto
             );
         } else {
             // Just upload as is
+            $fileSize = filesize($photoSource->getFile());
             $uploadPath = $storage->upload(
                 $photoSource->getFile(),
                 $saveName,
@@ -174,6 +175,7 @@ class SimplePhoto
             return (int) $this->dataStore->addPhoto(array(
                 'storageName' => $storageName,
                 'filePath' => $uploadPath,
+                'fileSize' => $fileSize,
                 'fileName' => $photoSource->getName(),
                 'fileExtension' => pathinfo($photoSource->getName(), PATHINFO_EXTENSION),
                 'fileMime' => $fileMime,
@@ -298,8 +300,8 @@ class SimplePhoto
             ));
         }
 
-        // Generate an array of index that will
-        // be pushed to the original array
+        // Generate an array of index that will be pushed to the original array
+        // if no key is set, by convention, we look for `photo_id`
         $keys = empty($keys) ? array('photo_id' => 'photo') : $keys;
         foreach ($keys as $index => $name) {
             if (is_int($index)) {
@@ -389,17 +391,18 @@ class SimplePhoto
             if (!$storage->exists($modifiedFileName)) {
                 // Only do image manipulation once
                 // (ie if file does not exists)
-                $modifiedFileName = $this->transformPhoto(
+                list($modifiedFileName, $fileSize) = $this->transformPhoto(
                     $storage,
                     $storage->getPhotoResource($photoResult->originalFilePath()),
                     $modifiedFileName,
                     $photo['file_mime'],
                     $options['transform']
                 );
-            }
 
-            // Set the file path to the new modified photo path
-            $photoResult->setFilePath($modifiedFileName);
+                $photoResult->setFileSize($fileSize);
+                // Set the file path to the new modified photo path
+                $photoResult->setFilePath($modifiedFileName);
+            }
         }
 
         $photoResult->setPath($storage->getPhotoPath($photoResult->filePath()));
@@ -443,10 +446,15 @@ class SimplePhoto
             'format' => $this->getSaveFormat($mimeType)
         ));
 
+        clearstatcache();
+
+        // get size after transforming photo
+        $size = filesize($tmpFile);
+
         if ($storage->upload($tmpFile, $modifiedFile)) {
             unlink($tmpFile);
 
-            return $modifiedFile;
+            return array($modifiedFile, $size);
         }
 
         return false;

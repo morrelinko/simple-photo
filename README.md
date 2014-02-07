@@ -39,7 +39,7 @@ $photo->url();
 $photo->path();
 $photo->mime();
 $photo->storage();
-* $photo->fileSize();
+$photo->fileSize();
 $photo->fileExtension();
 $photo->filePath();
 $photo->createdAt();

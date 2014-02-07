@@ -53,6 +53,11 @@ class PhotoResult
     protected $fileExtension;
 
     /**
+     * @var string
+     */
+    protected $fileSize;
+
+    /**
      * @var
      */
     protected $mime;
@@ -98,6 +103,7 @@ class PhotoResult
             'file_name' => null,
             'file_path' => null,
             'file_extension' => null,
+            'file_size' => 0,
             'storage_name' => null,
             'created_at' => null,
             'updated_at' => null
@@ -106,6 +112,7 @@ class PhotoResult
         $this->setId($photoData['photo_id']);
         $this->setFilename($photoData['file_name']);
         $this->setFileExtension($photoData['file_extension']);
+        $this->setFileSize($photoData['file_size']);
         $this->setStorage($photoData['storage_name']);
         $this->setFilePath($photoData['file_path']);
         $this->setMime($photoData['file_mime']);
@@ -135,6 +142,14 @@ class PhotoResult
     public function fileExtension()
     {
         return $this->fileExtension;
+    }
+
+    /**
+     * @return string
+     */
+    public function fileSize()
+    {
+        return (int)$this->fileSize;
     }
 
     /**
@@ -214,7 +229,7 @@ class PhotoResult
      */
     public function setId($id)
     {
-        $this->id = (int)$id;
+        $this->id = (int) $id;
     }
 
     /**
@@ -231,6 +246,14 @@ class PhotoResult
     public function setFileExtension($fileExtension)
     {
         $this->fileExtension = $fileExtension;
+    }
+
+    /**
+     * @param string $fileSize
+     */
+    public function setFileSize($fileSize)
+    {
+        $this->fileSize = $fileSize;
     }
 
     /**
