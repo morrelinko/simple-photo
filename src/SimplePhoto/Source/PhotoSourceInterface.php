@@ -21,7 +21,7 @@ interface PhotoSourceInterface
      *
      * @param $photoData
      *
-     * @return mixed
+     * @return PhotoSourceInterface
      */
     public function process($photoData);
 

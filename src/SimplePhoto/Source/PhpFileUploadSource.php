@@ -18,12 +18,21 @@ class PhpFileUploadSource implements PhotoSourceInterface
 {
     protected $fileData;
 
+    public function __construct($fileData)
+    {
+        if ($fileData != null) {
+            $this->process($fileData);
+        }
+    }
+
     /**
      * {@inheritDocs}
      */
-    public function process($photoData)
+    public function process($fileData)
     {
-        $this->fileData = $photoData;
+        $this->fileData = $fileData;
+
+        return $this;
     }
 
     /**

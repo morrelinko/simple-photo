@@ -92,49 +92,45 @@ class SimplePhoto
     }
 
     /**
-     * @param mixed $photoData
+     * @param mixed $uploadData
      * @param array $options
      *
      * @see SimplePhoto::uploadFrom()
      *
      * @return int
      */
-    public function uploadFromPhpFileUpload($photoData, array $options = array())
+    public function uploadFromPhpFileUpload($uploadData, array $options = array())
     {
-        return $this->uploadFrom($photoData, new PhpFileUploadSource(), $options);
+        return $this->upload(new PhpFileUploadSource($uploadData), $options);
     }
 
     /**
-     * @param mixed $photoData
+     * @param mixed $file
      * @param array $options
      *
      * @see SimplePhoto::uploadFrom()
      *
      * @return int
      */
-    public function uploadFromFilePath($photoData, array $options = array())
+    public function uploadFromFilePath($file, array $options = array())
     {
-        return $this->uploadFrom($photoData, new FilePathSource(), $options);
+        return $this->upload(new FilePathSource($file), $options);
     }
 
     /**
      * Upload Photo
      *
-     * @param mixed $photoData
+     * @param PhotoSourceInterface $photoSource
      * @param array $options Options available
      * <pre>
      * transform: options for transforming photo before saving
      * storage: storage system to save photo
      * </pre>
-     * @param PhotoSourceInterface $photoSource
      *
-     * @return int Photo ID
+     * @return int|bool Photo ID if successful or false otherwise
      */
-    public function uploadFrom(
-        $photoData,
-        PhotoSourceInterface $photoSource,
-        array $options = array()
-    ) {
+    public function upload(PhotoSourceInterface $photoSource, array $options = array())
+    {
         /**
          * @var array $transform
          * @var string $storageName
@@ -144,7 +140,6 @@ class SimplePhoto
             'storageName' => $this->storageManager->getDefault()
         ), $options));
 
-        $photoSource->process($photoData);
         $saveName = $this->generateOriginalSaveName($photoSource->getName());
         $storage = $this->getStorageManager()->get($storageName);
         $fileMime = $this->getFileMime($photoSource->getFile());
@@ -183,6 +178,29 @@ class SimplePhoto
         }
 
         return false;
+    }
+
+    /**
+     * Legacy Upload Photo
+     *
+     * @param mixed $photoData
+     * @param array $options Options available
+     * <pre>
+     * transform: options for transforming photo before saving
+     * storage: storage system to save photo
+     * </pre>
+     * @param PhotoSourceInterface $photoSource
+     *
+     * @return int Photo ID
+     *
+     * @deprecated
+     */
+    public function uploadFrom(
+        $photoData,
+        PhotoSourceInterface $photoSource,
+        array $options = array()
+    ) {
+        return $this->upload($photoSource->process($photoData), $options);
     }
 
     /**
