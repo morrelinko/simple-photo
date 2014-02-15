@@ -51,7 +51,7 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function upload($file, $destination, array $options = array())
     {
@@ -81,7 +81,7 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function deletePhoto($file)
     {
@@ -100,7 +100,7 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getPhotoPath($file)
     {
@@ -108,7 +108,7 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getPhotoUrl($file)
     {
@@ -124,7 +124,7 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getPhotoResource($file)
     {
@@ -135,7 +135,7 @@ class LocalStorage implements StorageInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function exists($file)
     {

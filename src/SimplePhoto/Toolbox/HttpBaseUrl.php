@@ -19,7 +19,7 @@ namespace SimplePhoto\Toolbox;
 class HttpBaseUrl implements BaseUrlInterface
 {
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getBaseUrl()
     {

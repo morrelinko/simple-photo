@@ -77,7 +77,7 @@ abstract class PdoConnection
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function addPhoto(array $values)
     {
@@ -103,7 +103,7 @@ abstract class PdoConnection
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getPhoto($photoId)
     {
@@ -129,7 +129,7 @@ abstract class PdoConnection
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getPhotos(array $photoIds)
     {
@@ -156,7 +156,7 @@ abstract class PdoConnection
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function deletePhoto($photoId)
     {

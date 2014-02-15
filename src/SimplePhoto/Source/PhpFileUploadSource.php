@@ -26,7 +26,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function process($fileData)
     {
@@ -36,7 +36,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -44,7 +44,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getFile()
     {

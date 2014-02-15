@@ -29,7 +29,7 @@ class FilePathSource implements PhotoSourceInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function process($file)
     {
@@ -39,7 +39,7 @@ class FilePathSource implements PhotoSourceInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getName()
     {
@@ -47,7 +47,7 @@ class FilePathSource implements PhotoSourceInterface
     }
 
     /**
-     * {@inheritDocs}
+     * {@inheritDoc}
      */
     public function getFile()
     {
