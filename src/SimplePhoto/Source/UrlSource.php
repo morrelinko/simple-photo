@@ -20,6 +20,11 @@ class UrlSource implements PhotoSourceInterface
 
     protected $name;
 
+    /**
+     * @var bool
+     */
+    protected $valid = true;
+
     public function __construct($url)
     {
         if ($url != null) {
@@ -39,15 +44,26 @@ class UrlSource implements PhotoSourceInterface
         $ch = curl_init($url);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_FILE, $fp);
 
         curl_exec($ch);
+        $headers = curl_getinfo($ch);
 
         curl_close($ch);
         fclose($fp);
+
+        if ($headers['http_code'] === 200 && $headers['download_content_length'] > 0) {
+            return $this;
+        }
+
+        $this->valid = false;
+        unlink($this->path);
+
+        return false;
     }
 
     /**
@@ -64,5 +80,13 @@ class UrlSource implements PhotoSourceInterface
     public function getFile()
     {
         return $this->path;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isValid()
+    {
+        return $this->valid;
     }
 }

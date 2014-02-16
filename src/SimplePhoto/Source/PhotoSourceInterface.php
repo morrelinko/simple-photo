@@ -38,4 +38,11 @@ interface PhotoSourceInterface
      * @return mixed
      */
     public function getFile();
+
+    /**
+     * If the source is valid
+     *
+     * @return boolean
+     */
+    public function isValid();
 }

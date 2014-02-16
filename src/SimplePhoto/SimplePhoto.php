@@ -131,6 +131,11 @@ class SimplePhoto
      */
     public function upload(PhotoSourceInterface $photoSource, array $options = array())
     {
+        if ($photoSource->isValid() == false) {
+            // No need to go further if source is invalid
+            return false;
+        }
+
         /**
          * @var array $transform
          * @var string $storageName

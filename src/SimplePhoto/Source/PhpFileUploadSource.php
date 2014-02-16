@@ -50,4 +50,12 @@ class PhpFileUploadSource implements PhotoSourceInterface
     {
         return $this->fileData['tmp_name'];
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isValid()
+    {
+        return true;
+    }
 }

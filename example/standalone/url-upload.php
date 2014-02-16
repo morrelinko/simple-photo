@@ -6,9 +6,11 @@ use SimplePhoto\Source\UrlSource;
 $simplePhoto = require 'setup.php';
 
 if (isset($_POST['image'])) {
-    $photoId = $simplePhoto->upload(new UrlSource($_POST['image']));
-
-    var_dump($simplePhoto->get($photoId));
+    if ($photoId = $simplePhoto->upload(new UrlSource($_POST['image']))) {
+        var_dump($simplePhoto->get($photoId));
+    } else {
+        echo "Error uploading image";
+    }
 }
 
 ?>

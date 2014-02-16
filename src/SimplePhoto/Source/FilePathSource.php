@@ -53,4 +53,12 @@ class FilePathSource implements PhotoSourceInterface
     {
         return $this->file;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isValid()
+    {
+        return true;
+    }
 }
