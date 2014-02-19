@@ -35,6 +35,7 @@ class MemoryDataStore implements DataStoreInterface
 
         $id = ++$this->count;
         $this->store[$id] = array(
+            'id' => $id,
             'file_name' => $values['fileName'],
             'storage_name' => $values['storageName'],
             'file_extension' => $values['fileExtension'],
@@ -44,7 +45,7 @@ class MemoryDataStore implements DataStoreInterface
             'created_at' => $values['createdAt'],
             'updated_at' => $values['updatedAt']
         );
-        var_dump($this);
+
         return $id;
     }
 
