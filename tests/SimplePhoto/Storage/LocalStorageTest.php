@@ -28,11 +28,10 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
         $mockBaseUrlImpl = \Mockery::mock("SimplePhoto\\Toolbox\\BaseUrlInterface");
         $mockBaseUrlImpl->shouldReceive("getBaseUrl")->andReturn(self::BASE_URL);
 
-        $this->storage = new LocalStorage(
-            $this->projectPath,
-            $this->savePath,
-            $mockBaseUrlImpl
-        );
+        $this->storage = new LocalStorage(array(
+            'root' => $this->projectPath,
+            'path' => $this->savePath
+        ), $mockBaseUrlImpl);
     }
 
     public function tearDown()
