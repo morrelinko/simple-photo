@@ -11,7 +11,7 @@ Through [Composer](http://getcomposer.org)
 ```json
 {
     "require": {
-        "morrelinko/simple-photo": "2.*"
+        "morrelinko/simple-photo": "0.*"
     }
 }
 ```
