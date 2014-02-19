@@ -15,8 +15,8 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     const BASE_URL = "http://example.com";
 
     const CREATE_PHOTO_TABLE = '
-        CREATE TABLE IF NOT EXISTS photo (
-            photo_id INTEGER PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS photos (
+            id INTEGER PRIMARY KEY,
             storage_name TEXT NOT NULL,
             file_name TEXT NOT NULL,
             file_extension TEXT NOT NULL,

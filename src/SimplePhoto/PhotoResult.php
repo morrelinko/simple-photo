@@ -99,7 +99,7 @@ class PhotoResult
     public function __construct($photoData)
     {
         $photoData = array_merge(array(
-            'photo_id' => null,
+            'id' => null,
             'file_name' => null,
             'file_path' => null,
             'file_extension' => null,
@@ -109,7 +109,7 @@ class PhotoResult
             'updated_at' => null
         ), $photoData);
 
-        $this->setId($photoData['photo_id']);
+        $this->setId($photoData['id']);
         $this->setFilename($photoData['file_name']);
         $this->setFileExtension($photoData['file_extension']);
         $this->setFileSize($photoData['file_size']);
@@ -149,7 +149,7 @@ class PhotoResult
      */
     public function fileSize()
     {
-        return (int)$this->fileSize;
+        return (int) $this->fileSize;
     }
 
     /**

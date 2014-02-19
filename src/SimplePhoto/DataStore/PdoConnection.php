@@ -37,7 +37,7 @@ abstract class PdoConnection
     public function __construct($connection, array $options = array())
     {
         $this->options = array_merge(array(
-            'photo_table' => 'photo'
+            'photo_table' => 'photos'
         ), $options);
 
         if (!$connection instanceof \PDO) {
@@ -109,10 +109,10 @@ abstract class PdoConnection
     {
         $sql = '
             SELECT
-                photo_id, storage_name, file_name, file_path,
+                id, storage_name, file_name, file_path,
                 file_extension, file_size, file_mime, created_at, updated_at
             FROM %s
-            WHERE photo_id = :photoId
+            WHERE id = :photoId
         ';
 
         $statement = $this->db->prepare(
@@ -136,10 +136,10 @@ abstract class PdoConnection
         $ids = str_repeat('?, ', count($photoIds)) . '?';
         $sql = '
             SELECT
-                photo_id, storage_name, file_name, file_path,
+                id, storage_name, file_name, file_path,
                 file_extension, file_size, file_mime, created_at, updated_at
             FROM %s
-            WHERE photo_id IN (' . $ids . ')
+            WHERE id IN (' . $ids . ')
         ';
 
         $statement = $this->db->prepare(
@@ -162,7 +162,7 @@ abstract class PdoConnection
     {
         $sql = '
             DELETE FROM %s
-            WHERE photo_id = :photoId
+            WHERE id = :photoId
         ';
 
         // Delete from database

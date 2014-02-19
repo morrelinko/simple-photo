@@ -1,5 +1,5 @@
-CREATE TABLE `photo` (
-	`photo_id` INT(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `photos` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
 	`storage_name` VARCHAR(50) NOT NULL COLLATE 'utf8_bin',
 	`file_name` VARCHAR(255) NOT NULL COLLATE 'utf8_bin',
 	`file_extension` VARCHAR(10) NOT NULL COLLATE 'utf8_bin',
