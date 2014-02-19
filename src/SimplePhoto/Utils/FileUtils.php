@@ -69,4 +69,19 @@ class FileUtils
             ? true
             : false;
     }
+
+    /**
+     * Gets the mime of a file
+     *
+     * @param string $file
+     *
+     * @return mixed
+     */
+    public static function getMime($file)
+    {
+        $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($fileInfo, $file);
+
+        return empty($mime) ? : $mime;
+    }
 }
