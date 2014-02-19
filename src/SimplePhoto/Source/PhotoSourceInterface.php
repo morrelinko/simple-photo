@@ -28,19 +28,24 @@ interface PhotoSourceInterface
     /**
      * Name of file
      *
-     * @return mixed
+     * @return string
      */
     public function getName();
 
     /**
      * Gets the file to be uploaded
      *
-     * @return mixed
+     * @return string
      */
     public function getFile();
 
     /**
-     * If the source is valid
+     * @return string
+     */
+    public function getMime();
+
+    /**
+     * Checks if the source file data is valid
      *
      * @return boolean
      */

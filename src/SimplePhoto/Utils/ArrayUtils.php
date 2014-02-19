@@ -25,4 +25,27 @@ class ArrayUtils
     {
         return reset($array);
     }
+
+    /**
+     * Ensures that specified keys exists in the array
+     *
+     * @param array $haystack
+     *
+     * @return bool
+     */
+    public static function hasKeys(array $haystack)
+    {
+        $fails = false;
+        $keys = func_get_args();
+        array_shift($keys);
+
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $haystack)) {
+                $fails = true;
+                break;
+            }
+        }
+
+        return !$fails;
+    }
 }

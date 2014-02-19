@@ -11,6 +11,8 @@
 
 namespace SimplePhoto\Source;
 
+use SimplePhoto\Utils\ArrayUtils;
+
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
  */
@@ -54,8 +56,16 @@ class PhpFileUploadSource implements PhotoSourceInterface
     /**
      * {@inheritDoc}
      */
+    public function getMime()
+    {
+        return $this->fileData['type'];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function isValid()
     {
-        return true;
+        return ArrayUtils::hasKeys($this->fileData, 'name', 'tmp_name', 'type');
     }
 }
