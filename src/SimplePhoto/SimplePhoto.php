@@ -19,6 +19,7 @@ use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
 use SimplePhoto\Toolbox\PhotoCollection;
+use SimplePhoto\Utils\FileUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -147,7 +148,7 @@ class SimplePhoto
 
         $saveName = $this->generateOriginalSaveName($photoSource->getName());
         $storage = $this->getStorageManager()->get($storageName);
-        $fileMime = $this->getFileMime($photoSource->getFile());
+        $fileMime = $photoSource->getMime();
 
         if ($transform) {
             // If we are to perform photo transformation during upload,
@@ -177,7 +178,7 @@ class SimplePhoto
                 'filePath' => $uploadPath,
                 'fileSize' => $fileSize,
                 'fileName' => $photoSource->getName(),
-                'fileExtension' => pathinfo($photoSource->getName(), PATHINFO_EXTENSION),
+                'fileExtension' => FileUtils::getExtension($photoSource->getName()),
                 'fileMime' => $fileMime,
             ));
         }
@@ -521,19 +522,6 @@ class SimplePhoto
         $extension = pathinfo($oldName, PATHINFO_EXTENSION);
 
         return sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension);
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return mixed|null
-     */
-    private function getFileMime($file)
-    {
-        $fileInfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($fileInfo, $file);
-
-        return !empty($mime) ? $mime : null;
     }
 
     /**

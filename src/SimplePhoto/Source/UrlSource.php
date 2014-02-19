@@ -16,9 +16,20 @@ namespace SimplePhoto\Source;
  */
 class UrlSource implements PhotoSourceInterface
 {
+    /**
+     * @var string
+     */
     protected $path;
 
+    /**
+     * @var string
+     */
     protected $name;
+
+    /**
+     * @var string
+     */
+    protected $mime;
 
     /**
      * @var bool
@@ -57,6 +68,8 @@ class UrlSource implements PhotoSourceInterface
         fclose($fp);
 
         if ($headers['http_code'] === 200 && $headers['download_content_length'] > 0) {
+            $this->mime = $headers['content_type'];
+
             return $this;
         }
 
@@ -80,6 +93,14 @@ class UrlSource implements PhotoSourceInterface
     public function getFile()
     {
         return $this->path;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMime()
+    {
+        return $this->mime;
     }
 
     /**

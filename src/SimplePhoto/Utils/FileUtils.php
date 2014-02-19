@@ -84,4 +84,16 @@ class FileUtils
 
         return empty($mime) ? : $mime;
     }
+
+    /**
+     * Gets the extension of a file
+     *
+     * @param string $file
+     *
+     * @return string
+     */
+    public static function getExtension($file)
+    {
+        return pathinfo($file, PATHINFO_EXTENSION);
+    }
 }

@@ -54,6 +54,14 @@ class PhpFileUploadSource implements PhotoSourceInterface
     /**
      * {@inheritDoc}
      */
+    public function getMime()
+    {
+        return $this->fileData['mime'];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function isValid()
     {
         return true;

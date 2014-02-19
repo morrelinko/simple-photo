@@ -11,6 +11,8 @@
 
 namespace SimplePhoto\Source;
 
+use SimplePhoto\Utils\FileUtils;
+
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
  */
@@ -52,6 +54,14 @@ class FilePathSource implements PhotoSourceInterface
     public function getFile()
     {
         return $this->file;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getMime()
+    {
+        return FileUtils::getMime($this->file);
     }
 
     /**
