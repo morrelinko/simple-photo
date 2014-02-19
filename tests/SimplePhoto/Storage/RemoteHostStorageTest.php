@@ -15,6 +15,8 @@ class RemoteHostStorageTest extends \PHPUnit_Framework_TestCase
     protected $storage;
 
     protected $options = array(
+        'path' => 'avatars',
+        'host' => '127.0.0.1',
         'root' => '/',
         'url' => 'http://static.img-ex.com',
         'username' => 'user',
@@ -26,7 +28,7 @@ class RemoteHostStorageTest extends \PHPUnit_Framework_TestCase
     {
         require_once 'ftp_functions.php';
 
-        $this->storage = new RemoteHostStorage('avatars', '127.0.0.1', $this->options);
+        $this->storage = new RemoteHostStorage($this->options);
     }
 
     public function testInitialize()
@@ -51,11 +53,13 @@ class RemoteHostStorageTest extends \PHPUnit_Framework_TestCase
     public function testConnectionWithWrongHost()
     {
         // Create a storage with wrong host
-        $storage = new RemoteHostStorage(
-            'avatars',
-            '189.156.6.1',
-            $this->options
-        );
+        $storage = new RemoteHostStorage(array_merge(
+            $this->options,
+            array(
+                'path' => 'avatars',
+                'host' => '189.156.6.1'
+            )
+        ));
 
         $this->setExpectedException('RuntimeException');
         $storage->connect();
@@ -65,8 +69,6 @@ class RemoteHostStorageTest extends \PHPUnit_Framework_TestCase
     {
         // Create a storage with wrong password
         $storage = new RemoteHostStorage(
-            'avatars',
-            '127.0.0.1',
             array_merge($this->options, array(
                 'password' => 'pa$$word'
             ))

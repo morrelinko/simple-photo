@@ -39,14 +39,26 @@ class LocalStorage implements StorageInterface
     /**
      * Constructor
      *
-     * @param string $projectRoot Root of your project
-     * @param null|string $savePath
+     * @param array $options
+     * <pre>
+     * root: Project public directory
+     * path: Path to save photos
+     * </pre>
      * @param \SimplePhoto\Toolbox\BaseUrlInterface $baseUrlImpl
      */
-    public function __construct($projectRoot, $savePath, BaseUrlInterface $baseUrlImpl = null)
+    public function __construct(array $options = array(), BaseUrlInterface $baseUrlImpl = null)
     {
-        $this->projectRoot = FileUtils::normalizePath($projectRoot);
-        $this->savePath = $savePath;
+        foreach ($options as $option => $value) {
+            switch ($option) {
+                case 'root':
+                    $this->projectRoot = FileUtils::normalizePath($value);
+                    break;
+                case 'path':
+                    $this->savePath = $value;
+                    break;
+            }
+        }
+
         $this->baseUrlImpl = $baseUrlImpl;
     }
 

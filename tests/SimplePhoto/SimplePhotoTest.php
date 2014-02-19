@@ -52,8 +52,15 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $dataStore->getConnection()->exec(self::CREATE_PHOTO_TABLE);
 
         // Setup Storage locations to use..
-        $localStorageOne = new LocalStorage(__DIR__ . '/..', 'files/photo/', $this->mockBaseUrlImpl);
-        $localStorageTwo = new LocalStorage(__DIR__ . '/..', 'files/avatars/', $this->mockBaseUrlImpl);
+        $localStorageOne = new LocalStorage(array(
+            'root' => __DIR__ . '/..',
+            'path' => 'files/photo/'
+        ), $this->mockBaseUrlImpl);
+
+        $localStorageTwo = new LocalStorage(array(
+            'root' => __DIR__ . '/..',
+            'path' => 'files/avatars/'
+        ), $this->mockBaseUrlImpl);
 
         // Setup Storage Manager
         $storageManager = new StorageManager();
@@ -62,6 +69,40 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
         //
         $this->simplePhoto = new SimplePhoto($storageManager, $dataStore);
+    }
+
+    public function tearDown()
+    {
+        $this->simplePhoto = null;
+        \Mockery::close();
+
+        $filesDir = __DIR__ . '/../files';
+        if (file_exists($filesDir . '/database/test_photos.db')) {
+            unlink($filesDir . '/database/test_photos.db');
+        }
+
+        try {
+            $fileSplObjects = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($filesDir . '/photo'),
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach ($fileSplObjects as $fullFileName => $fileSplObject) {
+                $fullFileName = FileUtils::normalizePath($fullFileName);
+                /** @var $fileSplObject \SplFileInfo */
+                if (in_array($fileSplObject->getFilename(), array('.', '..'))) {
+                    continue;
+                }
+
+                if ($fileSplObject->isDir()) {
+                    rmdir($fullFileName);
+                } else {
+                    unlink($fullFileName);
+                }
+            }
+        } catch (\UnexpectedValueException $e) {
+            printf("Files Directory contained a directory we can not re-curse into: " . $e->getMessage());
+        }
     }
 
     public function testStorageManager()
@@ -353,41 +394,11 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
     private function initFallbackStorage()
     {
-        $fallbackStorage = new LocalStorage(__DIR__ . ' /..', 'files /default', $this->mockBaseUrlImpl);
+        $fallbackStorage = new LocalStorage(array(
+            'root' => __DIR__ . ' /..',
+            'path' => 'files /default'
+        ), $this->mockBaseUrlImpl);
+
         $this->simplePhoto->getStorageManager()->setFallback($fallbackStorage);
-    }
-
-    public function tearDown()
-    {
-        $this->simplePhoto = null;
-        \Mockery::close();
-
-        $filesDir = __DIR__ . '/../files';
-        if (file_exists($filesDir . '/database/test_photos.db')) {
-            unlink($filesDir . '/database/test_photos.db');
-        }
-
-        try {
-            $fileSplObjects = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($filesDir . '/photo'),
-                \RecursiveIteratorIterator::CHILD_FIRST
-            );
-
-            foreach ($fileSplObjects as $fullFileName => $fileSplObject) {
-                $fullFileName = FileUtils::normalizePath($fullFileName);
-                /** @var $fileSplObject \SplFileInfo */
-                if (in_array($fileSplObject->getFilename(), array('.', '..'))) {
-                    continue;
-                }
-
-                if ($fileSplObject->isDir()) {
-                    rmdir($fullFileName);
-                } else {
-                    unlink($fullFileName);
-                }
-            }
-        } catch (\UnexpectedValueException $e) {
-            printf("Files Directory contained a directory we can not re-curse into: " . $e->getMessage());
-        }
     }
 }

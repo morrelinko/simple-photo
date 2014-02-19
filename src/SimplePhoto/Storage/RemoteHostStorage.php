@@ -68,22 +68,25 @@ class RemoteHostStorage implements StorageInterface
     /**
      * Constructor
      *
-     * @param string $path Directory relative to {$options#rootPath}
-     * on host to store photos eg files/photos
-     * @param string $host FTP Hostname
      * @param array $options Available options
      * <pre>
+     * path: save photos path relative to {$options#root} on host eg files/photos
+     * host: FTP Hostname
      * url: Remote host url eg http://example.com
      * root: Root directory to web host eg /var/www/public_html (Required)
      * port: Port number defaults to 21 (Optional)
      * </pre>
      */
-    public function __construct($path, $host, array $options = array())
+    public function __construct(array $options = array())
     {
-        $this->path = $path;
-        $this->host = $host;
         foreach ($options as $option => $value) {
             switch ($option) {
+                case 'path':
+                    $this->path = $value;
+                    break;
+                case 'host':
+                    $this->host = $value;
+                    break;
                 case 'url':
                     $this->url = $value;
                     break;
