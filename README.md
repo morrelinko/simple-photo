@@ -18,8 +18,8 @@ Through [Composer](http://getcomposer.org)
 
 Create the database using the schema below for the data store you will be using
 
-* Sqlite DataStore: [Sql Query](https://github.com/morrelinko/simple-photo/blob/master/resource/sqlite.sql)
-* MySql DataStore: [Sql Query](https://github.com/morrelinko/simple-photo/blob/master/resource/mysql.sql)
+* Sqlite DataStore: [Sql Query](https://github.com/morrelinko/simple-photo/blob/develop/schema/sqlite.sql)
+* MySql DataStore: [Sql Query](https://github.com/morrelinko/simple-photo/blob/develop/schema/mysql.sql)
 
 ## Uploading Photo
 
@@ -47,9 +47,10 @@ $photo->createdAt();
 
 ## Setup
 
-SimplePhoto requires a...
-1. Storage Manager: For Storing & Managing registered storage adapters.
-2. Data Store: (Such as database) For persisting photo data.
+SimplePhoto requires...
+
+* Storage Manager: For Storing & Managing registered storage adapters.
+* Data Store: (Such as database) For persisting photo data.
 
 ```php
 use SimplePhoto\Storage\LocalStorage;
@@ -165,7 +166,13 @@ var_dump($users);
 
 ```
 
-## Supported DataStores
+## Supported Photo Sources
+
+* FilePath Source
+* PhpFileUpload Source
+* Url Source
+
+## Supported Data Stores
 
 * MySql DataStore
 * Sqlite DataStore
@@ -177,6 +184,7 @@ var_dump($users);
 
 ## TODO
 
+* Add AWS Storage
 * Add MongoDB Data Store
 
 ## Credits

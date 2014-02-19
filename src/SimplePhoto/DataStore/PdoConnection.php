@@ -112,7 +112,7 @@ abstract class PdoConnection
                 id, storage_name, file_name, file_path,
                 file_extension, file_size, file_mime, created_at, updated_at
             FROM %s
-            WHERE photo_id = :photoId
+            WHERE id = :photoId
         ';
 
         $statement = $this->db->prepare(
@@ -139,7 +139,7 @@ abstract class PdoConnection
                 id, storage_name, file_name, file_path,
                 file_extension, file_size, file_mime, created_at, updated_at
             FROM %s
-            WHERE photo_id IN (' . $ids . ')
+            WHERE id IN (' . $ids . ')
         ';
 
         $statement = $this->db->prepare(
