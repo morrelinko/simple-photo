@@ -2,6 +2,8 @@
 
 namespace SimplePhoto\Storage;
 
+use SimplePhoto\Utils\FileUtils;
+
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
  */
@@ -23,7 +25,11 @@ class MemoryStorage implements StorageInterface
             );
         }
 
-        $this->storage[$file] = file_get_contents($file);
+        $this->storage[$file] = array(
+            'content' => file_get_contents($file),
+            'mtime' => time(),
+            'mime' => FileUtils::getMimeFromExtension(FileUtils::getExtension($name)),
+        );
 
         return $file;
     }
@@ -55,7 +61,13 @@ class MemoryStorage implements StorageInterface
      */
     public function getPhotoUrl($file)
     {
-        return null;
+        $file = $this->storage[$file];
+
+        // There is no way to generate a valid url for displaying
+        // memory storage, so we use the Data Uri Scheme
+        // {@see http://en.wikipedia.org/wiki/Data_URI_scheme}
+        // which you can use in <img> src attribute
+        return 'data:' . $file['mime'] . ';base64,' . base64_encode($file['content']);
     }
 
     /**
@@ -63,7 +75,12 @@ class MemoryStorage implements StorageInterface
      */
     public function getPhotoResource($file)
     {
-        return $this->exists($file) ? $this->storage[$file] : null;
+        $tmpName = tempnam(sys_get_temp_dir(), 'temp');
+        if ($this->exists($file)) {
+            file_put_contents($tmpName, $this->storage[$file]['content']);
+        }
+
+        return $tmpName;
     }
 
     /**

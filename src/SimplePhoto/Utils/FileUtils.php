@@ -17,6 +17,18 @@ namespace SimplePhoto\Utils;
 class FileUtils
 {
     /**
+     * @var array
+     */
+    protected static $mimes = array(
+        'jpeg' => 'image/jpeg',
+        'jpg' => 'image/jpeg',
+        'png' => 'image/png',
+        'gif' => 'image/gif',
+        'tiff' => 'image/tiff',
+        'tif' => 'image/tiff'
+    );
+
+    /**
      * Normalises a path. [php.net]function.realpath.html#84012
      * - Converts backslashes to forward slash
      * - Removes multiple slashes
@@ -86,6 +98,20 @@ class FileUtils
     }
 
     /**
+     * @param string $extension
+     *
+     * @return null|string
+     */
+    public static function getMimeFromExtension($extension)
+    {
+        if (isset(static::$mimes[$extension])) {
+            return static::$mimes[$extension];
+        }
+
+        return null;
+    }
+
+    /**
      * Gets the extension of a file
      *
      * @param string $file
@@ -95,5 +121,20 @@ class FileUtils
     public static function getExtension($file)
     {
         return pathinfo($file, PATHINFO_EXTENSION);
+    }
+
+    /**
+     * @param $mime
+     *
+     * @return null|string
+     */
+    public static function getExtensionFromMime($mime)
+    {
+        $mimes = array_flip(static::$mimes);
+        if (isset($mimes[$mime])) {
+            return $mimes[$mime];
+        }
+
+        return null;
     }
 }

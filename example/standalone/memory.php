@@ -14,4 +14,8 @@ $simplePhoto = new \SimplePhoto\SimplePhoto($storageManager, $memoryDataStore);
 // Upload
 $id = $simplePhoto->upload(new \SimplePhoto\Source\UrlSource('http://localhost/cdn/images/728X90.jpg'));
 
-var_dump($simplePhoto->get($id));
+$photo = $simplePhoto->get($id);
+// var_dump($photo);
+?>
+
+<img src="<?php echo $photo->url(); ?>" />
