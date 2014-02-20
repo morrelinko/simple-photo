@@ -25,13 +25,14 @@ class MemoryStorage implements StorageInterface
             );
         }
 
-        $this->storage[$file] = array(
+        $hash = sprintf(':memory:%s', md5($file));
+        $this->storage[$hash] = array(
             'content' => file_get_contents($file),
             'mtime' => time(),
             'mime' => FileUtils::getMimeFromExtension(FileUtils::getExtension($name)),
         );
 
-        return $file;
+        return $hash;
     }
 
     /**
@@ -43,7 +44,7 @@ class MemoryStorage implements StorageInterface
             return true;
         }
 
-        unset($this->storage);
+        unset($this->storage[$file]);
 
         return true;
     }
