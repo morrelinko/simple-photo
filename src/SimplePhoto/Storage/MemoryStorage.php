@@ -34,7 +34,11 @@ class MemoryStorage implements StorageInterface
             );
         }
 
-        $hash = sprintf(':memory:%s', md5($file));
+        if (substr($name, 0, 8) == ':memory:') {
+            $name = substr($name, 8);
+        }
+
+        $hash = sprintf(':memory:%s', $name);
         $this->storage[$hash] = array(
             'content' => file_get_contents($file),
             'mtime' => time(),
