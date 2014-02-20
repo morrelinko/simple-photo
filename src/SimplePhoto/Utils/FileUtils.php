@@ -83,6 +83,19 @@ class FileUtils
     }
 
     /**
+     * @param string $file
+     *
+     * @return string
+     */
+    public static function createTempFile($file)
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'up');
+        copy($file, $tmpFile);
+
+        return $tmpFile;
+    }
+
+    /**
      * Gets the mime of a file
      *
      * @param string $file

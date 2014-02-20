@@ -97,7 +97,6 @@ class SimplePhoto
      * @param array $options
      *
      * @see SimplePhoto::uploadFrom()
-     *
      * @return int
      */
     public function uploadFromPhpFileUpload($uploadData, array $options = array())
@@ -110,7 +109,6 @@ class SimplePhoto
      * @param array $options
      *
      * @see SimplePhoto::uploadFrom()
-     *
      * @return int
      */
     public function uploadFromFilePath($file, array $options = array())
@@ -156,7 +154,7 @@ class SimplePhoto
             // as the original image
             list($uploadPath, $fileSize) = $this->transformPhoto(
                 $storage,
-                $this->temp($photoSource->getFile()),
+                FileUtils::createTempFile($photoSource->getFile()),
                 $saveName,
                 $fileMime,
                 $transform
@@ -198,7 +196,6 @@ class SimplePhoto
      * @param PhotoSourceInterface $photoSource
      *
      * @return int Photo ID
-     *
      * @deprecated
      */
     public function uploadFrom(
@@ -214,7 +211,6 @@ class SimplePhoto
      * @param array $options
      *
      * @see SimplePhoto::build()
-     *
      * @return PhotoResult|false Returns false if photo is not
      * found and no fallback photo setup & defined
      */
@@ -232,7 +228,6 @@ class SimplePhoto
      * @param array $options
      *
      * @see SimplePhoto::build()
-     *
      * @return mixed|PhotoCollection
      */
     public function collection(array $ids, array $options = array())
@@ -307,7 +302,6 @@ class SimplePhoto
      * @param array $options Photo options
      *
      * @see build()
-     *
      * @throws \InvalidArgumentException
      */
     public function push(&$haystack, array $keys = array(), \Closure $callback = null, array $options = array())
@@ -467,7 +461,7 @@ class SimplePhoto
         }
 
         $transformer->save($tmpFile, array(
-            'format' => $this->getSaveFormat($mimeType)
+            'format' => FileUtils::getExtensionFromMime($mimeType)
         ));
 
         clearstatcache();
@@ -522,45 +516,6 @@ class SimplePhoto
         $extension = pathinfo($oldName, PATHINFO_EXTENSION);
 
         return sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension);
-    }
-
-    /**
-     * @param string $file
-     *
-     * @return string
-     */
-    private function temp($file)
-    {
-        $tmpFile = tempnam(sys_get_temp_dir(), 'up');
-        copy($file, $tmpFile);
-
-        return $tmpFile;
-    }
-
-    /**
-     * Gets the format that will be used for saving the photo
-     *
-     * @param string $mime
-     *
-     * @return string
-     */
-    private function getSaveFormat($mime)
-    {
-        $format = 'png';
-        switch ($mime) {
-            case 'image/jpg':
-            case 'image/jpeg':
-                $format = 'jpeg';
-                break;
-            case 'image/gif':
-                $format = 'gif';
-                break;
-            case 'image/png':
-                $format = 'png';
-                break;
-        }
-
-        return $format;
     }
 
     /**
