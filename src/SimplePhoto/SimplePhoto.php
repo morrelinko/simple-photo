@@ -515,7 +515,7 @@ class SimplePhoto
         $originalName = pathinfo($oldName, PATHINFO_FILENAME);
         $extension = pathinfo($oldName, PATHINFO_EXTENSION);
 
-        return sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension);
+        return FileUtils::normalizePath(sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension));
     }
 
     /**
