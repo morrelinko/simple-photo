@@ -6,13 +6,15 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 $storageManager = new \SimplePhoto\StorageManager();
 
 // Create local storage
-$localStorage = new \SimplePhoto\Storage\LocalStorage(
-    $root = __DIR__,
-    $path = './files/photos'
-);
+$localStorage = new \SimplePhoto\Storage\LocalStorage(array(
+    'root' => __DIR__,
+    'path' => './files/photos'
+));
 
 // Create remote host storage
-$remoteStorage = new \SimplePhoto\Storage\RemoteHostStorage('photos', '127.0.0.1', array(
+$remoteStorage = new \SimplePhoto\Storage\RemoteHostStorage(array(
+        'path' => 'photos',
+        'host' => '127.0.0.1',
         'port' => 21,
         'username' => 'morrelinko',
         'password' => '123456',
@@ -28,7 +30,12 @@ $storageManager->add('local', $localStorage);
 $storageManager->add('static_host', $remoteStorage);
 
 // Set fallback storage that loads default photos for invalid/not found photos
-$storageManager->setFallback(new \SimplePhoto\Storage\LocalStorage(__DIR__, './files/defaults'));
+$storageManager->setFallback(
+    new \SimplePhoto\Storage\LocalStorage(array(
+        'root' => __DIR__,
+        'path' => './files/defaults'
+    ))
+);
 
 // 2. Data Store
 $dataStore = new \SimplePhoto\DataStore\SqliteDataStore(array(
