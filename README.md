@@ -168,19 +168,21 @@ var_dump($users);
 
 ## Supported Photo Sources
 
-* FilePath Source
-* PhpFileUpload Source
-* Url Source
+* [FilePath Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/FilePathSource.php)
+* [PhpFileUpload Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/PhpFileUploadSource.php)
+* [Url Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/UrlSource.php)
 
 ## Supported Data Stores
 
-* MySql DataStore
-* Sqlite DataStore
+* [MySql Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/DataStore/MySqlDataStore.php)
+* [Sqlite Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/DataStore/SqliteDataStore.php)
+* [Memory Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/DataStore/MemoryDataStore.php)
 
 ## Supported Storage
 
-* Local Storage
-* Remote Host Storage
+* [Local Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/LocalStorage.php)
+* [Remote Host Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/RemoteHostStorage.php)
+* [Memory Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/MemoryStorage.php)
 
 ## TODO
 
