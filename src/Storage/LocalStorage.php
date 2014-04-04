@@ -102,7 +102,7 @@ class LocalStorage implements StorageInterface
         }
 
         return array(
-            'file_size' => filesize($file)
+            'file_size' => filesize($this->normalizePath($file))
         );
     }
 

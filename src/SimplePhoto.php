@@ -237,7 +237,7 @@ class SimplePhoto
         $found = array();
         array_map(function ($photo) use ($ids, &$found) {
             // This will be used to build found Photos
-            return $found[$photo['photo_id']] = $photo;
+            return $found[$photo['id']] = $photo;
         }, $photos);
 
         $sorted = array();

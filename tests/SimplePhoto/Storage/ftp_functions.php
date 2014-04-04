@@ -17,7 +17,6 @@ namespace SimplePhoto\Storage;
 
 /**
  * @param $host
- *
  * @return bool
  */
 function ftp_connect($host)
@@ -33,7 +32,6 @@ function ftp_connect($host)
  * @param $ftp_stream
  * @param $username
  * @param $password
- *
  * @return bool
  */
 function ftp_login($ftp_stream, $username, $password)
@@ -60,7 +58,6 @@ function ftp_close()
 /**
  * @param $ftp_stream
  * @param $directory
- *
  * @return bool
  */
 function ftp_chdir($ftp_stream, $directory)
@@ -76,7 +73,6 @@ function ftp_chdir($ftp_stream, $directory)
  * @param $ftp_stream
  * @param $local_file
  * @param $remote_file
- *
  * @return bool
  */
 function ftp_get($ftp_stream, $local_file, $remote_file)
@@ -90,11 +86,15 @@ function ftp_get($ftp_stream, $local_file, $remote_file)
     return true;
 }
 
+function ftp_file($ftp_stream, $remote_file)
+{
+    return 117689775;
+}
+
 /**
  * @param $ftp_stream
  * @param $remote_file
  * @param $local_file
- *
  * @return bool
  */
 function ftp_put($ftp_stream, $remote_file, $local_file)
@@ -109,7 +109,6 @@ function ftp_put($ftp_stream, $remote_file, $local_file)
 /**
  * @param $ftp_stream
  * @param $path
- *
  * @return bool
  */
 function ftp_delete($ftp_stream, $path)
@@ -124,7 +123,6 @@ function ftp_delete($ftp_stream, $path)
 /**
  * @param $ftp_stream
  * @param $directory
- *
  * @return bool
  */
 function ftp_mkdir($ftp_stream, $directory)
@@ -139,7 +137,6 @@ function ftp_mkdir($ftp_stream, $directory)
 /**
  * @param $ftp_stream
  * @param $directory
- *
  * @return array
  */
 function ftp_rawlist($ftp_stream, $directory)

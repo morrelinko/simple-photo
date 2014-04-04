@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 // 1. Storage Manager
 $storageManager = new \SimplePhoto\StorageManager();
@@ -44,8 +44,8 @@ $dataStore = new \SimplePhoto\DataStore\SqliteDataStore(array(
 
 // Not Required..
 $dataStore->getConnection()->exec("
-    CREATE TABLE IF NOT EXISTS photo (
-        photo_id INTEGER PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS photos (
+        id INTEGER PRIMARY KEY,
         storage_name TEXT NOT NULL,
         file_name TEXT NOT NULL,
         file_extension TEXT NOT NULL,
