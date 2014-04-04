@@ -21,7 +21,6 @@ var_dump($id);
 
 $photo = $simplePhoto->get($id);
 $resize = $simplePhoto->get($id, array('transform' => array('size' => array(50, 50))));
-var_dump($photo);
 var_dump($resize);
 ?>
 

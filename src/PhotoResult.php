@@ -104,6 +104,7 @@ class PhotoResult
             'file_path' => null,
             'file_extension' => null,
             'file_size' => 0,
+            'file_mime' => null,
             'storage_name' => null,
             'created_at' => null,
             'updated_at' => null
@@ -115,7 +116,7 @@ class PhotoResult
         $this->setFileSize($photoData['file_size']);
         $this->setStorage($photoData['storage_name']);
         $this->setFilePath($photoData['file_path']);
-        $this->setMime($photoData['file_mime']);
+        $this->setFileMime($photoData['file_mime']);
         $this->setCreatedAt($photoData['created_at']);
         $this->setUpdatedAt($photoData['created_at']);
     }
@@ -267,7 +268,7 @@ class PhotoResult
     /**
      * @param string $mime
      */
-    public function setMime($mime)
+    public function setFileMime($mime)
     {
         $this->mime = $mime;
     }
