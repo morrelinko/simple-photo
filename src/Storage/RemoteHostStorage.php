@@ -197,6 +197,20 @@ class RemoteHostStorage implements StorageInterface
     /**
      * {@inheritDoc}
      */
+    public function getInfo($file)
+    {
+        if (!$this->exists($file)) {
+            return false;
+        }
+
+        return array(
+            'file_size' => ftp_size($this->connection(), $file)
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function deletePhoto($file)
     {
         $file = $this->normalizePath($file, true, true);
@@ -209,7 +223,6 @@ class RemoteHostStorage implements StorageInterface
 
     /**
      * @param string $file
-     *
      * @return mixed
      */
     public function getPhotoPath($file)
@@ -243,7 +256,6 @@ class RemoteHostStorage implements StorageInterface
 
     /**
      * Lifted from the gaufrette library
-     *
      * {@inheritDoc}
      */
     public function exists($file)
@@ -278,7 +290,6 @@ class RemoteHostStorage implements StorageInterface
     /**
      * @param string $path
      * @param   bool $createIfNotExists
-     *
      * @return string
      * @throws \RuntimeException
      */
@@ -349,7 +360,6 @@ class RemoteHostStorage implements StorageInterface
      * Creates the specified directory recursively
      *
      * @param string $directory Directory to create
-     *
      * @return bool
      * @throws \RuntimeException if the directory could not be created
      */
@@ -373,7 +383,6 @@ class RemoteHostStorage implements StorageInterface
 
     /**
      * @param string $directory
-     *
      * @return bool
      */
     public function directoryExists($directory)
@@ -393,7 +402,6 @@ class RemoteHostStorage implements StorageInterface
 
     /**
      * @param $directory
-     *
      * @return bool
      */
     public function chdir($directory)
@@ -409,7 +417,6 @@ class RemoteHostStorage implements StorageInterface
      * @param $path
      * @param bool $withRoot
      * @param bool $withPath
-     *
      * @return mixed
      */
     protected function normalizePath($path, $withRoot = false, $withPath = true)

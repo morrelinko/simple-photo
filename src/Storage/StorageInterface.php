@@ -20,37 +20,40 @@ interface StorageInterface
      * @param string $file Source file
      * @param string $name File name
      * @param array $options
-     *
      * @return mixed
      */
     public function upload($file, $name, array $options = array());
 
     /**
+     * Gets information about a photo file
+     *
+     * @param string $file
+     * @return false|array false if file does not exists
+     */
+    public function getInfo($file);
+
+    /**
      * Delete photo file
      *
      * @param string $file
-     *
      * @return boolean
      */
     public function deletePhoto($file);
 
     /**
      * @param string $file
-     *
      * @return mixed
      */
     public function getPhotoPath($file);
 
     /**
      * @param string $file
-     *
      * @return mixed
      */
     public function getPhotoUrl($file);
 
     /**
      * @param string $file
-     *
      * @return mixed
      */
     public function getPhotoResource($file);
@@ -59,7 +62,6 @@ interface StorageInterface
      * Checks if photo exists
      *
      * @param string $file
-     *
      * @return boolean
      */
     public function exists($file);

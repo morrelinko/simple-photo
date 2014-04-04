@@ -95,6 +95,20 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritDoc}
      */
+    public function getInfo($file)
+    {
+        if (!$this->exists($file)) {
+            return false;
+        }
+
+        return array(
+            'file_size' => filesize($file)
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function deletePhoto($file)
     {
         if (!$this->exists($file)) {
@@ -184,7 +198,6 @@ class LocalStorage implements StorageInterface
 
     /**
      * @param $directory
-     *
      * @return bool
      */
     public function directoryExists($directory)
@@ -196,7 +209,6 @@ class LocalStorage implements StorageInterface
      * @param $directory
      * @param bool $recursive
      * @param int $mode
-     *
      * @return bool
      */
     public function createDirectory($directory, $recursive = true, $mode = 0777)
@@ -215,7 +227,6 @@ class LocalStorage implements StorageInterface
     /**
      * @param string $path
      * @param   bool $createIfNotExists
-     *
      * @return string
      * @throws \RuntimeException
      */
@@ -239,7 +250,6 @@ class LocalStorage implements StorageInterface
      * @param $path
      * @param bool $withRoot Set to true to prepend project root to the normalized path
      * @param $withBasePath
-     *
      * @return string
      */
     public function normalizePath($path, $withRoot = false, $withBasePath = true)

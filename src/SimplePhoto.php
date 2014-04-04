@@ -95,7 +95,6 @@ class SimplePhoto
     /**
      * @param mixed $uploadData
      * @param array $options
-     *
      * @see SimplePhoto::uploadFrom()
      * @return int
      */
@@ -107,7 +106,6 @@ class SimplePhoto
     /**
      * @param mixed $file
      * @param array $options
-     *
      * @see SimplePhoto::uploadFrom()
      * @return int
      */
@@ -125,7 +123,6 @@ class SimplePhoto
      * transform: options for transforming photo before saving
      * storage: storage system to save photo
      * </pre>
-     *
      * @return int|bool Photo ID if successful or false otherwise
      */
     public function upload(PhotoSourceInterface $photoSource, array $options = array())
@@ -194,7 +191,6 @@ class SimplePhoto
      * storage: storage system to save photo
      * </pre>
      * @param PhotoSourceInterface $photoSource
-     *
      * @return int Photo ID
      * @deprecated
      */
@@ -209,7 +205,6 @@ class SimplePhoto
     /**
      * @param int $photoId PhotoID
      * @param array $options
-     *
      * @see SimplePhoto::build()
      * @return PhotoResult|false Returns false if photo is not
      * found and no fallback photo setup & defined
@@ -226,7 +221,6 @@ class SimplePhoto
      *
      * @param array $ids List of photo ids
      * @param array $options
-     *
      * @see SimplePhoto::build()
      * @return mixed|PhotoCollection
      */
@@ -269,7 +263,6 @@ class SimplePhoto
      * Delete photo
      *
      * @param int $photoId
-     *
      * @return bool
      */
     public function delete($photoId)
@@ -300,7 +293,6 @@ class SimplePhoto
      * @param callable $callback (Optional) Callback to use for building
      * items to push into the array
      * @param array $options Photo options
-     *
      * @see build()
      * @throws \InvalidArgumentException
      */
@@ -362,7 +354,6 @@ class SimplePhoto
      * fallback: A fallback photo to use when photo is not found
      * transform: Transformation options to be applied to photo
      * </pre>
-     *
      * @return bool|PhotoResult
      */
     public function build(array $photo, array $options = array())
@@ -406,21 +397,21 @@ class SimplePhoto
             $photoResult->setOriginalFilePath($photo['file_path']);
             $photoResult->setOriginalPath($storage->getPhotoPath($photo['file_path']));
 
-            if (!$storage->exists($modifiedFileName)) {
+            if (!$info = $storage->getInfo($modifiedFileName)) {
                 // Only do image manipulation once
                 // (ie if file does not exists)
-                list($modifiedFileName, $fileSize) = $this->transformPhoto(
+                list($modifiedFileName, $info['file_size']) = $this->transformPhoto(
                     $storage,
                     $storage->getPhotoResource($photoResult->originalFilePath()),
                     $modifiedFileName,
                     $photo['file_mime'],
                     $options['transform']
                 );
-
-                $photoResult->setFileSize($fileSize);
-                // Set the file path to the new modified photo path
-                $photoResult->setFilePath($modifiedFileName);
             }
+
+            $photoResult->setFileSize($info['file_size']);
+            // Set the file path to the new modified photo path
+            $photoResult->setFilePath($modifiedFileName);
         }
 
         $photoResult->setPath($storage->getPhotoPath($photoResult->filePath()));
@@ -435,7 +426,6 @@ class SimplePhoto
      * @param string $modifiedFile
      * @param string $mimeType
      * @param array $transform
-     *
      * @return string|bool Modified file if successful or false otherwise
      */
     private function transformPhoto(
@@ -480,7 +470,6 @@ class SimplePhoto
 
     /**
      * @param string $file
-     *
      * @return string
      */
     private function generateOriginalSaveName($file)
@@ -495,7 +484,6 @@ class SimplePhoto
     /**
      * @param string $oldName
      * @param array $transform
-     *
      * @return string
      */
     private function generateModifiedSaveName($oldName, $transform)
@@ -521,7 +509,6 @@ class SimplePhoto
     /**
      * @param array $array
      * @param $index
-     *
      * @return array
      */
     private function arrayColumn(array $array, $index)
@@ -534,7 +521,6 @@ class SimplePhoto
 
     /**
      * @param array $photos
-     *
      * @return PhotoCollection
      */
     private function createPhotoCollection(array $photos = array())

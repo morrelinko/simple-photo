@@ -51,6 +51,20 @@ class MemoryStorage implements StorageInterface
     /**
      * {@inheritDoc}
      */
+    public function getInfo($file)
+    {
+        if (!$this->exists($file)) {
+            return false;
+        }
+
+        return array(
+            'file_size' => strlen($this->storage[$file]['content'])
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function deletePhoto($file)
     {
         if (!$this->exists($file)) {
