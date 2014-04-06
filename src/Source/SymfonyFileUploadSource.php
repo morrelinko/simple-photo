@@ -11,18 +11,26 @@
 
 namespace SimplePhoto\Source;
 
-use SimplePhoto\Utils\ArrayUtils;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
  */
-class PhpFileUploadSource implements PhotoSourceInterface
+class SymfonyFileUploadSource implements PhotoSourceInterface
 {
-    protected $fileData;
+    /**
+     * @var \Symfony\Component\HttpFoundation\File\UploadedFile
+     */
+    protected $file;
 
-    public function __construct($fileData)
+    /**
+     * Construct
+     *
+     * @param UploadedFile $file
+     */
+    public function __construct(UploadedFile $file)
     {
-        $this->fileData = $fileData;
+        $this->file = $file;
     }
 
     /**
@@ -38,7 +46,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
      */
     public function getName()
     {
-        return $this->fileData['name'];
+        return $this->file->getClientOriginalName();
     }
 
     /**
@@ -46,7 +54,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
      */
     public function getFile()
     {
-        return $this->fileData['tmp_name'];
+        return $this->file->getRealPath();
     }
 
     /**
@@ -54,7 +62,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
      */
     public function getMime()
     {
-        return $this->fileData['type'];
+        return $this->file->getMimeType();
     }
 
     /**
@@ -62,6 +70,6 @@ class PhpFileUploadSource implements PhotoSourceInterface
      */
     public function isValid()
     {
-        return ArrayUtils::hasKeys($this->fileData, 'name', 'tmp_name', 'type');
+        return $this->file->isValid();
     }
 }

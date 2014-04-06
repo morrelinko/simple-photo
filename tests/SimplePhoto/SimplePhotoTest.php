@@ -158,9 +158,8 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     public function testUploadAndTransformSize()
     {
         // Same as $this->simplePhoto->uploadFromFilePath()
-        $photoId = $this->simplePhoto->uploadFrom(
-            $this->photoSourceFile,
-            new FilePathSource()
+        $photoId = $this->simplePhoto->upload(
+            new FilePathSource($this->photoSourceFile)
         );
 
         $photo = $this->simplePhoto->get($photoId, array(

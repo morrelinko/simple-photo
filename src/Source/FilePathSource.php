@@ -25,18 +25,14 @@ class FilePathSource implements PhotoSourceInterface
 
     public function __construct($file = null)
     {
-        if ($file != null) {
-            $this->process($file);
-        }
+        $this->file = $file;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function process($file)
+    public function process()
     {
-        $this->file = $file;
-
         return $this;
     }
 
@@ -69,6 +65,6 @@ class FilePathSource implements PhotoSourceInterface
      */
     public function isValid()
     {
-        return true;
+        return is_file($this->file);
     }
 }

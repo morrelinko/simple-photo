@@ -19,6 +19,11 @@ class UrlSource implements PhotoSourceInterface
     /**
      * @var string
      */
+    protected $url;
+
+    /**
+     * @var string
+     */
     protected $path;
 
     /**
@@ -38,21 +43,19 @@ class UrlSource implements PhotoSourceInterface
 
     public function __construct($url)
     {
-        if ($url != null) {
-            $this->process($url);
-        }
+        $this->url = $url;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function process($url)
+    public function process()
     {
-        $this->name = basename($url);
+        $this->name = basename($this->url);
         $this->path = tempnam(sys_get_temp_dir(), 'sp_url');
         $fp = fopen($this->path, 'w+');
 
-        $ch = curl_init($url);
+        $ch = curl_init($this->url);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
         curl_setopt($ch, CURLOPT_HEADER, false);

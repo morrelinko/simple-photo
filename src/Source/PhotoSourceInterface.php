@@ -19,11 +19,9 @@ interface PhotoSourceInterface
     /**
      * Process the file input data
      *
-     * @param $photoData
-     *
      * @return PhotoSourceInterface
      */
-    public function process($photoData);
+    public function process();
 
     /**
      * Name of file

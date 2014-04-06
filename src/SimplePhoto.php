@@ -127,6 +127,7 @@ class SimplePhoto
      */
     public function upload(PhotoSourceInterface $photoSource, array $options = array())
     {
+        $photoSource->process();
         if ($photoSource->isValid() == false) {
             // No need to go further if source is invalid
             return false;
@@ -179,27 +180,6 @@ class SimplePhoto
         }
 
         return false;
-    }
-
-    /**
-     * Legacy Upload Photo
-     *
-     * @param mixed $photoData
-     * @param array $options Options available
-     * <pre>
-     * transform: options for transforming photo before saving
-     * storage: storage system to save photo
-     * </pre>
-     * @param PhotoSourceInterface $photoSource
-     * @return int Photo ID
-     * @deprecated
-     */
-    public function uploadFrom(
-        $photoData,
-        PhotoSourceInterface $photoSource,
-        array $options = array()
-    ) {
-        return $this->upload($photoSource->process($photoData), $options);
     }
 
     /**
