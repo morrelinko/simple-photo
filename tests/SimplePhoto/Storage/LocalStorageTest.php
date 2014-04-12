@@ -1,6 +1,6 @@
 <?php namespace SimplePhoto\Storage;
 
-use SimplePhoto\Utils\FileUtils;
+use SimplePhoto\Toolbox\FileUtils;
 
 /**
  * @author Morrison Laju <morrelinko@gmail.com>

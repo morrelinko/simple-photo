@@ -12,7 +12,7 @@
 namespace SimplePhoto;
 
 use SimplePhoto\Storage\StorageInterface;
-use SimplePhoto\Utils\ArrayUtils;
+use SimplePhoto\Toolbox\ArrayUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>

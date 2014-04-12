@@ -11,7 +11,7 @@
 
 namespace SimplePhoto\Source;
 
-use SimplePhoto\Utils\ArrayUtils;
+use SimplePhoto\Toolbox\ArrayUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>

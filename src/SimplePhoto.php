@@ -18,8 +18,8 @@ use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
+use SimplePhoto\Toolbox\FileUtils;
 use SimplePhoto\Toolbox\PhotoCollection;
-use SimplePhoto\Utils\FileUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>

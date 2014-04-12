@@ -5,7 +5,7 @@ namespace SimplePhoto;
 use SimplePhoto\DataStore\SqliteDataStore;
 use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Storage\LocalStorage;
-use SimplePhoto\Utils\FileUtils;
+use SimplePhoto\Toolbox\FileUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>

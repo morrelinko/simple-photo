@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SimplePhoto\Utils;
+namespace SimplePhoto\Toolbox;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>

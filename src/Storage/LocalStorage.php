@@ -12,9 +12,9 @@
 namespace SimplePhoto\Storage;
 
 use SimplePhoto\Toolbox\BaseUrlInterface;
+use SimplePhoto\Toolbox\FileUtils;
 use SimplePhoto\Toolbox\HttpBaseUrl;
-use SimplePhoto\Utils\FileUtils;
-use SimplePhoto\Utils\TextUtils;
+use SimplePhoto\Toolbox\TextUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
