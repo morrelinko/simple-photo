@@ -58,7 +58,7 @@ class MemoryStorage implements StorageInterface
         }
 
         return array(
-            'file_size' => strlen($this->storage[$file]['content'])
+            'file_size' => FileUtils::getContentSize($this->storage[$file]['content'])
         );
     }
 

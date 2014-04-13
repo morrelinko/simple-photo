@@ -11,6 +11,8 @@
 
 namespace SimplePhoto\Toolbox;
 
+use finfo;
+
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
  */
@@ -36,7 +38,6 @@ class FileUtils
      *
      * @param string $path
      * @param boolean $fixAbsolute
-     *
      * @return string
      */
     public static function normalizePath($path, $fixAbsolute = true)
@@ -68,7 +69,6 @@ class FileUtils
      * Checks if a path is an absolute path
      *
      * @param string $path
-     *
      * @return bool
      */
     public static function isAbsolute($path)
@@ -84,7 +84,6 @@ class FileUtils
 
     /**
      * @param string $file
-     *
      * @return string
      */
     public static function createTempFile($file)
@@ -96,10 +95,33 @@ class FileUtils
     }
 
     /**
+     * Gets mime type of a content
+     *
+     * @param $content
+     * @return string
+     */
+    public static function getContentMime($content)
+    {
+        $finfo = new Finfo(FILEINFO_MIME_TYPE);
+
+        return $finfo->buffer($content);
+    }
+
+    /**
+     * Gets the size of a content
+     *
+     * @param string $content
+     * @return int
+     */
+    public static function getContentSize($content)
+    {
+        return mb_strlen($content);
+    }
+
+    /**
      * Gets the mime of a file
      *
      * @param string $file
-     *
      * @return mixed
      */
     public static function getMime($file)
@@ -112,7 +134,6 @@ class FileUtils
 
     /**
      * @param string $extension
-     *
      * @return null|string
      */
     public static function getMimeFromExtension($extension)
@@ -128,7 +149,6 @@ class FileUtils
      * Gets the extension of a file
      *
      * @param string $file
-     *
      * @return string
      */
     public static function getExtension($file)
@@ -138,7 +158,6 @@ class FileUtils
 
     /**
      * @param $mime
-     *
      * @return null|string
      */
     public static function getExtensionFromMime($mime)
