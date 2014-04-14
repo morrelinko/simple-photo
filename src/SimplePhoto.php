@@ -302,7 +302,7 @@ class SimplePhoto
         }
 
         if ($callback == null) {
-            $callback = function (&$item, $photo, $index, $name) use ($keys) {
+            $callback = function (&$item, $photo, $name) use ($keys) {
                 $item[$name] = $photo;
 
                 return $item;
@@ -316,13 +316,13 @@ class SimplePhoto
                 $ids = ArrayUtils::arrayColumn($haystack, $index);
                 $photos = $this->collection($ids, $options);
                 foreach ($haystack as $key => $item) {
-                    $callback($haystack[$key], $photos->get($key), $index, $name);
+                    $callback($haystack[$key], $photos->get($key), $name, $index);
                 }
             }
         } else {
             foreach ($keys as $index => $name) {
                 $photo = $this->get($haystack[$index], $options);
-                $callback($haystack, $photo, $index, $name);
+                $callback($haystack, $photo, $name, $index);
             }
         }
     }

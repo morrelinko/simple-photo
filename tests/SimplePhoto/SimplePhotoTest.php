@@ -368,7 +368,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->simplePhoto->push(
             $original,
             array('photo_id', 'cover_photo_id'),
-            function (&$item, $photo, $index) {
+            function (&$item, $photo, $name, $index) {
                 /** @var $photo \SimplePhoto\PhotoResult */
                 if ($index == 'photo_id') {
                     $item['photo_url'] = $photo->url();
