@@ -18,6 +18,7 @@ use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
 use SimplePhoto\Storage\StorageInterface;
+use SimplePhoto\Toolbox\ArrayUtils;
 use SimplePhoto\Toolbox\FileUtils;
 use SimplePhoto\Toolbox\PhotoCollection;
 
@@ -312,7 +313,7 @@ class SimplePhoto
             // This array is a list
             foreach ($keys as $index => $name) {
                 // Get list of photo ids
-                $ids = $this->arrayColumn($haystack, $index);
+                $ids = ArrayUtils::arrayColumn($haystack, $index);
                 $photos = $this->collection($ids, $options);
                 foreach ($haystack as $key => $item) {
                     $callback($haystack[$key], $photos->get($key), $index, $name);
@@ -484,19 +485,6 @@ class SimplePhoto
         $extension = pathinfo($oldName, PATHINFO_EXTENSION);
 
         return FileUtils::normalizePath(sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension));
-    }
-
-    /**
-     * @param array $array
-     * @param $index
-     * @return array
-     */
-    private function arrayColumn(array $array, $index)
-    {
-        //$values = function_exists('array_column') ? array_column($array, $index) : array();
-        return array_map(function ($item) use ($index) {
-            return $item[$index];
-        }, $array);
     }
 
     /**
