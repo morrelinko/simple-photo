@@ -67,7 +67,11 @@ class AwsS3Storage implements StorageInterface
      */
     public function getInfo($file)
     {
+        $result = $this->client->headObject($this->getOptions($file));
 
+        return array(
+            'file_size' => $result['ContentLength']
+        );
     }
 
     /**
