@@ -55,7 +55,7 @@ class AwsS3Storage implements StorageInterface
                 'SourceFile' => $file
             )));
 
-            return $this->normalizePath($file, false);
+            return $this->normalizePath($name, false);
 
         } catch (\Exception $e) {
             return false;
