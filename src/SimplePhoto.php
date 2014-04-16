@@ -421,8 +421,8 @@ class SimplePhoto
         $transformer = $imagine->open($tmpFile);
 
         // Start transforming
-        if (isset($transform['size'])) {
-            list($width, $height) = $transform['size'];
+        if (isset($transform['resize'])) {
+            list($width, $height) = $transform['resize'];
             $transformer->resize(new Box($width, $height));
         }
 
@@ -470,8 +470,8 @@ class SimplePhoto
     private function generateModifiedSaveName($oldName, $transform)
     {
         $newName = null;
-        if (isset($transform['size'])) {
-            $newName .= implode('x', $transform['size']);
+        if (isset($transform['resize'])) {
+            $newName .= implode('x', $transform['resize']);
         }
 
         if (isset($transform['rotate'][0])) {
