@@ -279,14 +279,9 @@ class SimplePhoto
      */
     public function push(&$haystack, array $keys = array(), \Closure $callback = null, array $options = array())
     {
-        if ($haystack instanceof \Iterator) {
-            $haystack = iterator_to_array($haystack, true);
-        }
-
         if (!is_array($haystack)) {
             throw new \InvalidArgumentException(sprintf(
-                'Argument 1 passed to %s must be an array
-                 or implement interface \Iterator',
+                'Argument 1 passed to %s must be an array',
                 __METHOD__
             ));
         }
@@ -349,7 +344,9 @@ class SimplePhoto
             if ($options['fallback'] == null ||
                 !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)
             ) {
-                // If default is not set, then no default photo is available
+                // No fallback photo is defined or no fallback storage added
+                // We shouldn't probably continue. Seems developer prefers
+                // to handle missing images manually.
                 return false;
             }
 
