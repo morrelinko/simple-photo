@@ -17,6 +17,7 @@ use SimplePhoto\DataStore\DataStoreInterface;
 use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
+use SimplePhoto\Source\UrlSource;
 use SimplePhoto\Storage\StorageInterface;
 use SimplePhoto\Toolbox\ArrayUtils;
 use SimplePhoto\Toolbox\FileUtils;
@@ -94,7 +95,12 @@ class SimplePhoto
     }
 
     /**
-     * @param mixed $uploadData
+     * Upload file from native file upload shortcut
+     * <p>
+     *  $sp->uploadFromPhpFileUpload($_FILES['image']);
+     * </p>
+     *
+     * @param array $uploadData Data from $_FILES
      * @param array $options
      * @see SimplePhoto::uploadFrom()
      * @return int
@@ -105,6 +111,11 @@ class SimplePhoto
     }
 
     /**
+     * Upload file from path shortcut
+     * <p>
+     *  $sp->uploadFromFilePath('/path/to/image.png');
+     * </p>
+     *
      * @param mixed $file
      * @param array $options
      * @see SimplePhoto::uploadFrom()
@@ -113,6 +124,21 @@ class SimplePhoto
     public function uploadFromFilePath($file, array $options = array())
     {
         return $this->upload(new FilePathSource($file), $options);
+    }
+
+    /**
+     * Upload file from url shortcut
+     * <p>
+     *  $sp->uploadFromUrl('http://example.tld/image.png');
+     * </p>
+     *
+     * @param $url
+     * @param array $options
+     * @return bool|int
+     */
+    public function uploadFromUrl($url, array $options = array())
+    {
+        return $this->upload(new UrlSource($url), $options);
     }
 
     /**
