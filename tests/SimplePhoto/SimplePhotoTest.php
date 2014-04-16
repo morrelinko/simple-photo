@@ -164,7 +164,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
         $photo = $this->simplePhoto->get($photoId, array(
             'transform' => array(
-                'size' => array(50, 50)
+                'resize' => array(50, 50)
             )
         ));
 
@@ -187,7 +187,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     public function testUploadWithTransformSize()
     {
         $transform = array(
-            'size' => array(100, 100)
+            'resize' => array(100, 100)
         );
 
         $photoId = $this->simplePhoto->uploadFromFilePath(
