@@ -286,8 +286,8 @@ class SimplePhoto
             ));
         }
 
-        // Generate an array of index that will be pushed to the original array
-        // if no key is set, by convention, we look for `photo_id`
+        // Generate an array of index that will be pushed to the original array.
+        // If no key is set, by convention, we look for `photo_id`
         $keys = empty($keys) ? array('photo_id' => 'photo') : $keys;
         foreach ($keys as $index => $name) {
             if (is_int($index)) {
