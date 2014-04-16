@@ -163,6 +163,11 @@ class FileUtils
     public static function getExtensionFromMime($mime)
     {
         $mimes = array_flip(static::$mimes);
+
+        if ($mime == 'image/jpg') {
+            return $mimes['image/jpeg'];
+        }
+
         if (isset($mimes[$mime])) {
             return $mimes[$mime];
         }
