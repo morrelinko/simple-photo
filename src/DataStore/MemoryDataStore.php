@@ -93,5 +93,7 @@ class MemoryDataStore implements DataStoreInterface
     public function deletePhoto($photoId)
     {
         unset($this->store[$photoId]);
+
+        return true;
     }
 }

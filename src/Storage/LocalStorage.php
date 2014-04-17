@@ -14,7 +14,6 @@ namespace SimplePhoto\Storage;
 use SimplePhoto\Toolbox\BaseUrlInterface;
 use SimplePhoto\Toolbox\FileUtils;
 use SimplePhoto\Toolbox\HttpBaseUrl;
-use SimplePhoto\Toolbox\TextUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -54,7 +53,7 @@ class LocalStorage implements StorageInterface
                     $this->projectRoot = FileUtils::normalizePath($value);
                     break;
                 case 'path':
-                    $this->savePath = $value;
+                    $this->setSavePath($value);
                     break;
             }
         }
@@ -65,7 +64,7 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritDoc}
      */
-    public function upload($file, $destination, array $options = array())
+    public function upload($file, $name, array $options = array())
     {
         if (!is_file($file)) {
             throw new \RuntimeException(
@@ -73,20 +72,11 @@ class LocalStorage implements StorageInterface
             );
         }
 
-        $fileName = basename($file);
-        if ($destination) {
-            if (TextUtils::endsWith($destination, '/')) {
-                $destination = $destination . $fileName;
-            }
-        } else {
-            $destination = $fileName;
-        }
-
-        $savePath = $this->normalizePath($destination, true);
+        $savePath = $this->normalizePath($name, true);
         $this->verifyPathExists(dirname($this->normalizePath($savePath, true)), true);
 
         if (copy($file, $savePath)) {
-            return $this->normalizePath($destination, false, false);
+            return $this->normalizePath($name, false, false);
         }
 
         return false;
@@ -184,16 +174,6 @@ class LocalStorage implements StorageInterface
     public function setSavePath($savePath)
     {
         $this->savePath = $savePath;
-    }
-
-    /**
-     * Gets the full path for saving photo
-     *
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->normalizePath(null, true, true);
     }
 
     /**

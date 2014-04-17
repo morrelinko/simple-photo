@@ -27,7 +27,7 @@ class HttpBaseUrl implements BaseUrlInterface
             ($_SERVER['SERVER_PORT'] == 443);
 
         $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-        $path = pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME);
+        $path = str_replace('\\', '/', pathinfo($_SERVER['PHP_SELF'], PATHINFO_DIRNAME));
 
         return 'http' . ($secure ? 's' : '') . '://' . $host . ($path == '/' ? '' : '/' . trim($path, '/'));
     }
