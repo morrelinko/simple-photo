@@ -12,7 +12,6 @@
 namespace SimplePhoto;
 
 use Imagine\Gd\Imagine;
-use Imagine\Image\Box;
 use SimplePhoto\DataStore\DataStoreInterface;
 use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
@@ -22,6 +21,8 @@ use SimplePhoto\Storage\StorageInterface;
 use SimplePhoto\Toolbox\ArrayUtils;
 use SimplePhoto\Toolbox\FileUtils;
 use SimplePhoto\Toolbox\PhotoCollection;
+use SimplePhoto\Transformer\DefaultTransformer;
+use SimplePhoto\Transformer\TransformerInterface;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -42,6 +43,11 @@ class SimplePhoto
      * @var DataStoreInterface
      */
     protected $dataStore;
+
+    /**
+     * @var TransformerInterface
+     */
+    protected $transformer;
 
     /**
      * Constructor
@@ -92,6 +98,26 @@ class SimplePhoto
     public function setDataStore(DataStoreInterface $dataStore)
     {
         $this->dataStore = $dataStore;
+    }
+
+    /**
+     * @return TransformerInterface
+     */
+    public function getTransformer()
+    {
+        if (!$this->transformer) {
+            $this->transformer = $this->createDefaultTransformer();
+        }
+
+        return $this->transformer;
+    }
+
+    /**
+     * @param TransformerInterface $transformer
+     */
+    public function setTransformer(TransformerInterface $transformer)
+    {
+        $this->transformer = $transformer;
     }
 
     /**
@@ -439,23 +465,9 @@ class SimplePhoto
         $mimeType,
         array $transform = array()
     ) {
-        // Load image for manipulation
-        $imagine = new Imagine();
-        $transformer = $imagine->open($tmpFile);
-
-        // Start transforming
-        if (isset($transform['resize'])) {
-            list($width, $height) = $transform['resize'];
-            $transformer->resize(new Box($width, $height));
-        }
-
-        if (isset($transform['rotate'])) {
-            list($angle, $background) = array_pad($transform['rotate'], 2, null);
-            $transformer->rotate((int) $angle, $background);
-        }
-
-        $transformer->save($tmpFile, array(
-            'format' => FileUtils::getExtensionFromMime($mimeType)
+        $this->getTransformer()->transform($tmpFile, $transform, array(
+            'mime_type' => $mimeType,
+            'modified_file' => $modifiedFile
         ));
 
         clearstatcache();
@@ -492,30 +504,31 @@ class SimplePhoto
      */
     private function generateModifiedSaveName($oldName, $transform)
     {
-        $newName = null;
-        if (isset($transform['resize'])) {
-            $newName .= implode('x', $transform['resize']);
-        }
-
-        if (isset($transform['rotate'][0])) {
-            // We only need the angle for the name
-            $newName .= sprintf('-r%s', $transform['rotate'][0]);
-        }
-
+        $name = $this->getTransformer()->generateName($transform);
         // Extract information from original file
         $directory = dirname($oldName);
         $originalName = pathinfo($oldName, PATHINFO_FILENAME);
         $extension = pathinfo($oldName, PATHINFO_EXTENSION);
 
-        return FileUtils::normalizePath(sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension));
+        return FileUtils::normalizePath(
+            sprintf('%s/%s-%s.%s', $directory, $originalName, $name, $extension)
+        );
     }
 
     /**
      * @param array $photos
      * @return PhotoCollection
      */
-    private function createPhotoCollection(array $photos = array())
+    protected function createPhotoCollection(array $photos = array())
     {
         return new PhotoCollection($photos);
+    }
+
+    /**
+     * @return DefaultTransformer
+     */
+    protected function createDefaultTransformer()
+    {
+        return new DefaultTransformer(new Imagine());
     }
 }
