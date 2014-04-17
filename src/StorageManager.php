@@ -11,6 +11,7 @@
 
 namespace SimplePhoto;
 
+use RuntimeException;
 use SimplePhoto\Storage\StorageInterface;
 use SimplePhoto\Toolbox\ArrayUtils;
 
@@ -31,8 +32,22 @@ class StorageManager
     /**
      * @param $name
      * @param StorageInterface $storage
+     * @throws RuntimeException
      */
     public function add($name, StorageInterface $storage)
+    {
+        if (isset($this->storageList[$name])) {
+            throw new RuntimeException('Storage [' . $name . '] already exists.');
+        }
+
+        $this->storageList[$name] = $storage;
+    }
+
+    /**
+     * @param $name
+     * @param StorageInterface $storage
+     */
+    public function replace($name, StorageInterface $storage)
     {
         $this->storageList[$name] = $storage;
     }
@@ -47,7 +62,6 @@ class StorageManager
 
     /**
      * @param string $name
-     *
      * @return bool
      */
     public function has($name)
@@ -67,7 +81,6 @@ class StorageManager
 
     /**
      * @param $name
-     *
      * @return StorageInterface
      * @throws \RuntimeException
      */
