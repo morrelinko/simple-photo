@@ -104,11 +104,6 @@ function mkdir($dir, $mode = 0777, $recursive = true)
     return \mkdir($dir, $mode, $recursive);
 }
 
-function tempnam($dir, $prefix = null)
-{
-    return 'tmp/' . $prefix . '1234.tmp';
-}
-
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
  */
@@ -188,7 +183,10 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     public function testGetPhotoResource()
     {
         $storage = $this->createStorage($this->createBaseUrlImpl());
-        $this->assertEquals('tmp/temp1234.tmp', $storage->getPhotoResource('test/photo.png'));
+        $tmpFile = $storage->getPhotoResource('test/photo.png');
+        $this->assertFileExists($tmpFile);
+
+        @unlink($tmpFile);
     }
 
     public function testDeletePhoto()

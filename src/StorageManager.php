@@ -49,7 +49,9 @@ class StorageManager
      */
     public function replace($name, StorageInterface $storage)
     {
-        $this->storageList[$name] = $storage;
+        if ($this->has($name)) {
+            $this->storageList[$name] = $storage;
+        }
     }
 
     /**

@@ -44,7 +44,7 @@ class DefaultTransformer implements TransformerInterface
             if ($transform == 'resize') {
                 $image->resize(new Box($args[0], $args[1]));
             } else if ($transform == 'rotate') {
-                list($angle, $background) = array_pad($transform['rotate'], 2, null);
+                list($angle, $background) = array_pad($transformOptions['rotate'], 2, null);
                 $image->rotate((int) $angle, $background);
             }
         }

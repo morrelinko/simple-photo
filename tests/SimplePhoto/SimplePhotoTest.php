@@ -29,6 +29,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->storageManager = new StorageManager();
         $this->storageManager->add('storage_photo', new MemoryStorage());
         $this->storageManager->add('storage_avatars', new MemoryStorage());
+        $this->storageManager->add('mock_storage', \Mockery::mock('SimplePhoto\Storage\MemoryStorage'));
 
         $this->simplePhoto = new SimplePhoto($this->storageManager, $this->dataStore);
 
@@ -37,7 +38,7 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
             'type' => 'image/png',
             'tmp_name' => __DIR__ . '/../files/tmp/sample.png',
             'error' => UPLOAD_ERR_OK,
-            'size' => 38028
+            'size' => 4892
         );
     }
 
@@ -46,6 +47,15 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->storageManager, $this->simplePhoto->getStorageManager());
         $this->assertSame($this->dataStore, $this->simplePhoto->getDataStore());
         $this->assertInstanceOf('SimplePhoto\\DataStore\\DataStoreInterface', $this->simplePhoto->getDataStore());
+    }
+
+    public function testCustomTransformer()
+    {
+        $transformer = \Mockery::mock('stdClass, SimplePhoto\Transformer\TransformerInterface');
+        $this->assertInstanceOf('SimplePhoto\Transformer\TransformerInterface', $transformer);
+
+        $this->simplePhoto->setTransformer($transformer);
+        $this->assertSame($transformer, $this->simplePhoto->getTransformer());
     }
 
     public function testUpload()
@@ -96,6 +106,19 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         )));
 
         $this->assertEquals(1, $photoId);
+
+        $storage = $this->simplePhoto->getStorageManager()->get('mock_storage');
+        $storage->shouldReceive('upload')->andReturn(false);
+
+        $photoId = $this->uploadPhoto(array(
+            'storage_name' => 'mock_storage',
+            'transform' => array(
+                'resize' => array(50, 50),
+                'rotate' => array(180)
+            )
+        ));
+
+        $this->assertFalse($photoId);
     }
 
     public function testGetPhoto()
@@ -104,10 +127,15 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $photo = $this->simplePhoto->get($id);
 
         $this->assertInstanceOf('SimplePhoto\\PhotoResult', $photo);
-        $this->assertEquals($photo->id(), $id);
-        $this->assertSame($photo->fileName(), 'photo.png');
-        $this->assertSame($photo->fileExtension(), 'png');
-        $this->assertSame($photo->fileMime(), 'image/png');
+        $this->assertEquals($id, $photo->id());
+        $this->assertEquals('photo.png', $photo->fileName());
+        $this->assertEquals('png', $photo->fileExtension());
+        $this->assertEquals('image/png', $photo->fileMime());
+        $this->assertEquals(4892, $photo->fileSize());
+        $this->assertEquals('storage_photo', $photo->storage());
+        $this->assertEquals($photo->createdAt(), $photo->updatedAt());
+        $this->assertNull($photo->originalFilePath());
+        $this->assertNull($photo->originalPath());
 
         $storage = $this->simplePhoto->getStorageManager()->get('storage_photo');
         $this->assertTrue($storage->exists($photo->path()));
@@ -118,7 +146,8 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $photoId = $this->uploadPhoto();
         $photo = $this->simplePhoto->get($photoId, array(
             'transform' => array(
-                'resize' => array(50, 50)
+                'resize' => array(50, 50),
+                'rotate' => array(180)
             )
         ));
 
@@ -160,6 +189,24 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('SimplePhoto\PhotoResult', $this->simplePhoto->get($photoId));
         $this->assertTrue($this->simplePhoto->delete($photoId));
         $this->assertFalse($this->simplePhoto->get($photoId));
+    }
+
+    public function testDeletePhotoFails()
+    {
+        $store = \Mockery::mock('SimplePhoto\DataStore\DataStoreInterface');
+
+        $store->shouldReceive('getPhoto')->once()->andReturn(array(
+            'storage_name' => 'mock_storage',
+            'file_path' => 'photos/photo.png'
+        ));
+
+        $store->shouldReceive('addPhoto')->once()->andReturn(true);
+        $store->shouldReceive('deletePhoto')->once()->andReturn(false);
+
+        $this->simplePhoto->setDataStore($store);
+        $photoId = $this->uploadPhoto();
+
+        $this->assertFalse($this->simplePhoto->delete($photoId));
     }
 
     public function testGetCollectionOfInvalidPhotos()
@@ -310,12 +357,12 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    protected function uploadPhoto()
+    protected function uploadPhoto($options = array())
     {
         $source = \Mockery::mock(new PhpFileUploadSource($_FILES['photo']));
         $source->shouldReceive('isValid')->once()->andReturn(true);
 
-        return $this->simplePhoto->upload($source);
+        return $this->simplePhoto->upload($source, $options);
     }
 
     private function initFallbackStorage()
@@ -329,5 +376,14 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         ), $baseUrlImpl);
 
         $this->simplePhoto->getStorageManager()->setFallback($fallbackStorage);
+    }
+
+    public function tearDown()
+    {
+        $this->dataStore
+            = $this->storageManager
+            = $this->simplePhoto = null;
+
+        \Mockery::close();
     }
 }

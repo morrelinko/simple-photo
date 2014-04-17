@@ -186,20 +186,16 @@ class SimplePhoto
             return false;
         }
 
-        /**
-         * @var array $transform
-         * @var string $storageName
-         */
-        extract(array_merge(array(
+        $options = array_merge(array(
             'transform' => array(),
-            'storageName' => $this->storageManager->getDefault()
-        ), $options));
+            'storage_name' => $this->storageManager->getDefault()
+        ), $options);
 
         $saveName = $this->generateOriginalSaveName($photoSource->getName());
-        $storage = $this->getStorageManager()->get($storageName);
+        $storage = $this->getStorageManager()->get($options['storage_name']);
         $fileMime = $photoSource->getMime();
 
-        if ($transform) {
+        if ($options['transform']) {
             // If we are to perform photo transformation during upload,
             // transformation specs are applied and the new photo is saved
             // as the original image
@@ -208,7 +204,7 @@ class SimplePhoto
                 FileUtils::createTempFile($photoSource->getFile()),
                 $saveName,
                 $fileMime,
-                $transform
+                $options['transform']
             );
         } else {
             // Just upload as is
@@ -223,7 +219,7 @@ class SimplePhoto
         if ($uploadPath && $this->dataStore != null) {
             // Persist uploaded photo data
             return (int) $this->dataStore->addPhoto(array(
-                'storageName' => $storageName,
+                'storageName' => $options['storage_name'],
                 'filePath' => $uploadPath,
                 'fileSize' => $fileSize,
                 'fileName' => $photoSource->getName(),
@@ -309,10 +305,8 @@ class SimplePhoto
 
         $storage = $this->storageManager->get($photo['storage_name']);
 
-        if ($this->dataStore->deletePhoto($photoId)) {
-            if ($storage->deletePhoto($photo['file_path'])) {
-                return true;
-            }
+        if ($this->dataStore->deletePhoto($photoId) && $storage->deletePhoto($photo['file_path'])) {
+            return true;
         }
 
         return false;
