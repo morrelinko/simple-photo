@@ -1,6 +1,6 @@
 SimplePhoto
 ---------------------
-Photo uploading and management made easy
+Photo uploading and management made easy.
 
 [![Build Status](https://travis-ci.org/morrelinko/simple-photo.png?branch=master)](https://travis-ci.org/morrelinko/simple-photo)
 
@@ -29,6 +29,20 @@ $photoId = $simplePhoto->uploadFromPhpFileUpload($_FILES["image"]);
 $photoId = $simplePhoto->uploadFromFilePath("/path/to/photo.png");
 ```
 
+With support for accepting uploads from different sources.
+
+```php
+$photoId = $simplePhoto->upload(new YourUploadSource($imageData));
+```
+
+The two upload methods shown above actually are just like aliases/shortcuts for doing this
+
+```php
+$photoId = $simplePhoto->upload(new PhpFileUploadSource($_FILES["image"]));
+// Or
+$photoId = $simplePhoto->upload(new FilePathSource("/path/to/photo.png"));
+```
+
 ## Retrieving Photo
 
 ```php
@@ -37,12 +51,13 @@ $photo = $simplePhoto->get($photoId);
 $photo->id();
 $photo->url();
 $photo->path();
-$photo->mime();
+$photo->fileMime();
 $photo->storage();
 $photo->fileSize();
 $photo->fileExtension();
 $photo->filePath();
 $photo->createdAt();
+...
 ```
 
 ## Setup
@@ -50,7 +65,7 @@ $photo->createdAt();
 SimplePhoto requires...
 
 * Storage Manager: For Storing & Managing registered storage adapters.
-* Data Store: (Such as database) For persisting photo data.
+* Data Store: Database for persisting information about a photo.
 
 ```php
 use SimplePhoto\Storage\LocalStorage;
@@ -86,7 +101,7 @@ $photo = $simplePhoto->get($photoId, [
 ]);
 ```
 
-All transformation options available...
+The default transformation options available...
 
 ```php
 [
@@ -95,7 +110,10 @@ All transformation options available...
 ]
 ```
 
-Arguments in brackets are optional
+[You could implement your own transformer and add more transformation options](http://simplephoto.morrelinko.com/docs/transformer)
+
+Arguments in parenthesis are optional
+
 
 ## Collection of photos
 
@@ -125,7 +143,7 @@ $localPhotos = $photos->filter(function($photo) {
 var_dump($localPhotos);
 ```
 
-## Push (in english 'push photo result into')
+## Push
 
 ```php
 // Probably gotten from a db
@@ -171,6 +189,7 @@ var_dump($users);
 * [FilePath Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/FilePathSource.php)
 * [PhpFileUpload Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/PhpFileUploadSource.php)
 * [Url Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/UrlSource.php)
+* [SymfonyFileUploadSource](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/SymfonyFileUploadSource.php)
 
 ## Supported Data Stores
 
@@ -183,10 +202,10 @@ var_dump($users);
 * [Local Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/LocalStorage.php)
 * [Remote Host Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/RemoteHostStorage.php)
 * [Memory Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/MemoryStorage.php)
+* [AwsS3 Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/AwsS3Storage.php)
 
 ## TODO
 
-* Add AWS Storage
 * Add MongoDB Data Store
 
 ## Credits
