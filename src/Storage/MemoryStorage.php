@@ -11,7 +11,7 @@
 
 namespace SimplePhoto\Storage;
 
-use SimplePhoto\Utils\FileUtils;
+use SimplePhoto\Toolbox\FileUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -58,7 +58,7 @@ class MemoryStorage implements StorageInterface
         }
 
         return array(
-            'file_size' => strlen($this->storage[$file]['content'])
+            'file_size' => FileUtils::getContentSize($this->storage[$file]['content'])
         );
     }
 

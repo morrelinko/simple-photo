@@ -60,7 +60,7 @@ class PhotoResult
     /**
      * @var
      */
-    protected $mime;
+    protected $fileMime;
 
     /**
      * @var string
@@ -93,7 +93,6 @@ class PhotoResult
 
     /**
      * @param array $photoData
-     *
      * @return PhotoResult
      */
     public function __construct($photoData)
@@ -180,9 +179,9 @@ class PhotoResult
     /**
      * @return string
      */
-    public function mime()
+    public function fileMime()
     {
-        return $this->mime;
+        return $this->fileMime;
     }
 
     /**
@@ -270,7 +269,7 @@ class PhotoResult
      */
     public function setFileMime($mime)
     {
-        $this->mime = $mime;
+        $this->fileMime = $mime;
     }
 
     /**

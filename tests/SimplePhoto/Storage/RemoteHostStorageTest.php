@@ -150,4 +150,10 @@ class RemoteHostStorageTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('RuntimeException');
         $this->storage->createDirectory('create/dir/fails');
     }
+
+    public function tearDown()
+    {
+        $this->storage = null;
+        \Mockery::close();
+    }
 }

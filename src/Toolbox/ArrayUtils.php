@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SimplePhoto\Utils;
+namespace SimplePhoto\Toolbox;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -18,7 +18,6 @@ class ArrayUtils
 {
     /**
      * @param array $array
-     *
      * @return mixed
      */
     public static function first(array $array)
@@ -30,7 +29,6 @@ class ArrayUtils
      * Ensures that specified keys exists in the array
      *
      * @param array $haystack
-     *
      * @return bool
      */
     public static function hasKeys(array $haystack)
@@ -47,5 +45,18 @@ class ArrayUtils
         }
 
         return !$fails;
+    }
+
+    /**
+     * @param array $haystack
+     * @param string $index
+     * @return array
+     */
+    public static function arrayColumn(array $haystack, $index)
+    {
+        //$values = function_exists('array_column') ? array_column($array, $index) : array();
+        return array_map(function ($item) use ($index) {
+            return $item[$index];
+        }, $haystack);
     }
 }

@@ -11,7 +11,7 @@
 
 namespace SimplePhoto\DataStore;
 
-use SimplePhoto\Utils\FileUtils;
+use SimplePhoto\Toolbox\FileUtils;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>

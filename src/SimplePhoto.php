@@ -12,14 +12,17 @@
 namespace SimplePhoto;
 
 use Imagine\Gd\Imagine;
-use Imagine\Image\Box;
 use SimplePhoto\DataStore\DataStoreInterface;
 use SimplePhoto\Source\FilePathSource;
 use SimplePhoto\Source\PhotoSourceInterface;
 use SimplePhoto\Source\PhpFileUploadSource;
+use SimplePhoto\Source\UrlSource;
 use SimplePhoto\Storage\StorageInterface;
+use SimplePhoto\Toolbox\ArrayUtils;
+use SimplePhoto\Toolbox\FileUtils;
 use SimplePhoto\Toolbox\PhotoCollection;
-use SimplePhoto\Utils\FileUtils;
+use SimplePhoto\Transformer\DefaultTransformer;
+use SimplePhoto\Transformer\TransformerInterface;
 
 /**
  * @author Laju Morrison <morrelinko@gmail.com>
@@ -40,6 +43,11 @@ class SimplePhoto
      * @var DataStoreInterface
      */
     protected $dataStore;
+
+    /**
+     * @var TransformerInterface
+     */
+    protected $transformer;
 
     /**
      * Constructor
@@ -93,7 +101,32 @@ class SimplePhoto
     }
 
     /**
-     * @param mixed $uploadData
+     * @return TransformerInterface
+     */
+    public function getTransformer()
+    {
+        if (!$this->transformer) {
+            $this->transformer = $this->createDefaultTransformer();
+        }
+
+        return $this->transformer;
+    }
+
+    /**
+     * @param TransformerInterface $transformer
+     */
+    public function setTransformer(TransformerInterface $transformer)
+    {
+        $this->transformer = $transformer;
+    }
+
+    /**
+     * Upload file from native file upload shortcut
+     * <p>
+     *  $sp->uploadFromPhpFileUpload($_FILES['image']);
+     * </p>
+     *
+     * @param array $uploadData Data from $_FILES
      * @param array $options
      * @see SimplePhoto::uploadFrom()
      * @return int
@@ -104,6 +137,11 @@ class SimplePhoto
     }
 
     /**
+     * Upload file from path shortcut
+     * <p>
+     *  $sp->uploadFromFilePath('/path/to/image.png');
+     * </p>
+     *
      * @param mixed $file
      * @param array $options
      * @see SimplePhoto::uploadFrom()
@@ -112,6 +150,21 @@ class SimplePhoto
     public function uploadFromFilePath($file, array $options = array())
     {
         return $this->upload(new FilePathSource($file), $options);
+    }
+
+    /**
+     * Upload file from url shortcut
+     * <p>
+     *  $sp->uploadFromUrl('http://example.tld/image.png');
+     * </p>
+     *
+     * @param $url
+     * @param array $options
+     * @return bool|int
+     */
+    public function uploadFromUrl($url, array $options = array())
+    {
+        return $this->upload(new UrlSource($url), $options);
     }
 
     /**
@@ -133,20 +186,16 @@ class SimplePhoto
             return false;
         }
 
-        /**
-         * @var array $transform
-         * @var string $storageName
-         */
-        extract(array_merge(array(
+        $options = array_merge(array(
             'transform' => array(),
-            'storageName' => $this->storageManager->getDefault()
-        ), $options));
+            'storage_name' => $this->storageManager->getDefault()
+        ), $options);
 
         $saveName = $this->generateOriginalSaveName($photoSource->getName());
-        $storage = $this->getStorageManager()->get($storageName);
+        $storage = $this->getStorageManager()->get($options['storage_name']);
         $fileMime = $photoSource->getMime();
 
-        if ($transform) {
+        if ($options['transform']) {
             // If we are to perform photo transformation during upload,
             // transformation specs are applied and the new photo is saved
             // as the original image
@@ -155,7 +204,7 @@ class SimplePhoto
                 FileUtils::createTempFile($photoSource->getFile()),
                 $saveName,
                 $fileMime,
-                $transform
+                $options['transform']
             );
         } else {
             // Just upload as is
@@ -170,7 +219,7 @@ class SimplePhoto
         if ($uploadPath && $this->dataStore != null) {
             // Persist uploaded photo data
             return (int) $this->dataStore->addPhoto(array(
-                'storageName' => $storageName,
+                'storageName' => $options['storage_name'],
                 'filePath' => $uploadPath,
                 'fileSize' => $fileSize,
                 'fileName' => $photoSource->getName(),
@@ -256,10 +305,8 @@ class SimplePhoto
 
         $storage = $this->storageManager->get($photo['storage_name']);
 
-        if ($this->dataStore->deletePhoto($photoId)) {
-            if ($storage->deletePhoto($photo['file_path'])) {
-                return true;
-            }
+        if ($this->dataStore->deletePhoto($photoId) && $storage->deletePhoto($photo['file_path'])) {
+            return true;
         }
 
         return false;
@@ -278,20 +325,15 @@ class SimplePhoto
      */
     public function push(&$haystack, array $keys = array(), \Closure $callback = null, array $options = array())
     {
-        if ($haystack instanceof \Iterator) {
-            $haystack = iterator_to_array($haystack, true);
-        }
-
         if (!is_array($haystack)) {
             throw new \InvalidArgumentException(sprintf(
-                'Argument 1 passed to %s must be an array
-                 or implement interface \Iterator',
+                'Argument 1 passed to %s must be an array',
                 __METHOD__
             ));
         }
 
-        // Generate an array of index that will be pushed to the original array
-        // if no key is set, by convention, we look for `photo_id`
+        // Generate an array of index that will be pushed to the original array.
+        // If no key is set, by convention, we look for `photo_id`
         $keys = empty($keys) ? array('photo_id' => 'photo') : $keys;
         foreach ($keys as $index => $name) {
             if (is_int($index)) {
@@ -301,7 +343,7 @@ class SimplePhoto
         }
 
         if ($callback == null) {
-            $callback = function (&$item, $photo, $index, $name) use ($keys) {
+            $callback = function (&$item, $photo, $name) use ($keys) {
                 $item[$name] = $photo;
 
                 return $item;
@@ -312,16 +354,16 @@ class SimplePhoto
             // This array is a list
             foreach ($keys as $index => $name) {
                 // Get list of photo ids
-                $ids = $this->arrayColumn($haystack, $index);
+                $ids = ArrayUtils::arrayColumn($haystack, $index);
                 $photos = $this->collection($ids, $options);
                 foreach ($haystack as $key => $item) {
-                    $callback($haystack[$key], $photos->get($key), $index, $name);
+                    $callback($haystack[$key], $photos->get($key), $name, $index);
                 }
             }
         } else {
             foreach ($keys as $index => $name) {
                 $photo = $this->get($haystack[$index], $options);
-                $callback($haystack, $photo, $index, $name);
+                $callback($haystack, $photo, $name, $index);
             }
         }
     }
@@ -348,7 +390,9 @@ class SimplePhoto
             if ($options['fallback'] == null ||
                 !$this->storageManager->has(StorageManager::FALLBACK_STORAGE)
             ) {
-                // If default is not set, then no default photo is available
+                // No fallback photo is defined or no fallback storage added
+                // We shouldn't probably continue. Seems developer prefers
+                // to handle missing images manually.
                 return false;
             }
 
@@ -415,23 +459,9 @@ class SimplePhoto
         $mimeType,
         array $transform = array()
     ) {
-        // Load image for manipulation
-        $imagine = new Imagine();
-        $transformer = $imagine->open($tmpFile);
-
-        // Start transforming
-        if (isset($transform['size'])) {
-            list($width, $height) = $transform['size'];
-            $transformer->resize(new Box($width, $height));
-        }
-
-        if (isset($transform['rotate'])) {
-            list($angle, $background) = array_pad($transform['rotate'], 2, null);
-            $transformer->rotate((int) $angle, $background);
-        }
-
-        $transformer->save($tmpFile, array(
-            'format' => FileUtils::getExtensionFromMime($mimeType)
+        $this->getTransformer()->transform($tmpFile, $transform, array(
+            'mime_type' => $mimeType,
+            'modified_file' => $modifiedFile
         ));
 
         clearstatcache();
@@ -468,43 +498,31 @@ class SimplePhoto
      */
     private function generateModifiedSaveName($oldName, $transform)
     {
-        $newName = null;
-        if (isset($transform['size'])) {
-            $newName .= implode('x', $transform['size']);
-        }
-
-        if (isset($transform['rotate'][0])) {
-            // We only need the angle for the name
-            $newName .= sprintf('-r%s', $transform['rotate'][0]);
-        }
-
+        $name = $this->getTransformer()->generateName($transform);
         // Extract information from original file
         $directory = dirname($oldName);
         $originalName = pathinfo($oldName, PATHINFO_FILENAME);
         $extension = pathinfo($oldName, PATHINFO_EXTENSION);
 
-        return FileUtils::normalizePath(sprintf('%s/%s-%s.%s', $directory, $originalName, $newName, $extension));
-    }
-
-    /**
-     * @param array $array
-     * @param $index
-     * @return array
-     */
-    private function arrayColumn(array $array, $index)
-    {
-        //$values = function_exists('array_column') ? array_column($array, $index) : array();
-        return array_map(function ($item) use ($index) {
-            return $item[$index];
-        }, $array);
+        return FileUtils::normalizePath(
+            sprintf('%s/%s-%s.%s', $directory, $originalName, $name, $extension)
+        );
     }
 
     /**
      * @param array $photos
      * @return PhotoCollection
      */
-    private function createPhotoCollection(array $photos = array())
+    protected function createPhotoCollection(array $photos = array())
     {
         return new PhotoCollection($photos);
+    }
+
+    /**
+     * @return DefaultTransformer
+     */
+    protected function createDefaultTransformer()
+    {
+        return new DefaultTransformer(new Imagine());
     }
 }
