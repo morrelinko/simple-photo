@@ -7,8 +7,10 @@ namespace SimplePhoto\DataStore;
  */
 class MemoryDataStoreTest extends \PHPUnit_Framework_TestCase
 {
-    public function test()
+    public function testConnection()
     {
+        $memory = new MemoryDataStore();
 
+        $this->assertInternalType('array', $memory->getConnection());
     }
 }
