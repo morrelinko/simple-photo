@@ -452,7 +452,7 @@ class SimplePhoto
      * @param array $transform
      * @return string|bool Modified file if successful or false otherwise
      */
-    private function transformPhoto(
+    protected function transformPhoto(
         StorageInterface $storage,
         $tmpFile,
         $modifiedFile,
@@ -482,7 +482,7 @@ class SimplePhoto
      * @param string $file
      * @return string
      */
-    private function generateOriginalSaveName($file)
+    protected function generateOriginalSaveName($file)
     {
         $fileName = uniqid(time() . substr(str_shuffle('abcdefABCDEF012345'), 0, 8));
         $extension = pathinfo($file, PATHINFO_EXTENSION);
@@ -496,7 +496,7 @@ class SimplePhoto
      * @param array $transform
      * @return string
      */
-    private function generateModifiedSaveName($oldName, $transform)
+    protected function generateModifiedSaveName($oldName, $transform)
     {
         $name = $this->getTransformer()->generateName($transform);
         // Extract information from original file
