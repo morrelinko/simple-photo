@@ -54,10 +54,12 @@ class SimplePhoto
      *
      * @param StorageManager $storageManager
      * @param DataStoreInterface $dataStore
+     * @param array $options
      */
     public function __construct(
         StorageManager $storageManager = null,
-        DataStoreInterface $dataStore = null
+        DataStoreInterface $dataStore = null,
+        array $options = array()
     ) {
         if ($storageManager != null) {
             $this->setStorageManager($storageManager);
@@ -66,6 +68,8 @@ class SimplePhoto
         if ($dataStore != null) {
             $this->setDataStore($dataStore);
         }
+
+        $this->setOptions($options);
     }
 
     /**
@@ -118,6 +122,13 @@ class SimplePhoto
     public function setTransformer(TransformerInterface $transformer)
     {
         $this->transformer = $transformer;
+    }
+
+    public function setOptions($options)
+    {
+        $this->options = array_merge(array(
+            'tmp_dir' => sys_get_temp_dir()
+        ), $options);
     }
 
     /**
@@ -201,7 +212,10 @@ class SimplePhoto
             // as the original image
             list($uploadPath, $fileSize) = $this->transformPhoto(
                 $storage,
-                FileUtils::createTempFile($photoSource->getFile()),
+                FileUtils::createTempFile(
+                    $photoSource->getFile(),
+                    $this->options['tmp_dir']
+                ),
                 $saveName,
                 $fileMime,
                 $options['transform']
@@ -426,7 +440,10 @@ class SimplePhoto
                 // (ie if file does not exists)
                 list($modifiedFileName, $info['file_size']) = $this->transformPhoto(
                     $storage,
-                    $storage->getPhotoResource($photoResult->originalFilePath()),
+                    $storage->getPhotoResource(
+                        $photoResult->originalFilePath(),
+                        tempnam($this->options['tmp_dir'], 'sp')
+                    ),
                     $modifiedFileName,
                     $photo['file_mime'],
                     $options['transform']

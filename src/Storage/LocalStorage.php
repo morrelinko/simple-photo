@@ -142,12 +142,11 @@ class LocalStorage implements StorageInterface
     /**
      * {@inheritDoc}
      */
-    public function getPhotoResource($file)
+    public function getPhotoResource($file, $tmpFile)
     {
-        $tmpName = tempnam(sys_get_temp_dir(), 'temp');
-        copy($this->normalizePath($file, true), $tmpName);
+        copy($this->normalizePath($file, true), $tmpFile);
 
-        return $tmpName;
+        return $tmpFile;
     }
 
     /**

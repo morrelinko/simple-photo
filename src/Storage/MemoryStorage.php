@@ -101,20 +101,20 @@ class MemoryStorage implements StorageInterface
     /**
      * {@inheritDoc}
      */
-    public function getPhotoResource($file)
+    public function getPhotoResource($file, $tmpFile)
     {
-        $tmpName = tempnam(sys_get_temp_dir(), 'temp');
         if ($this->exists($file)) {
-            file_put_contents($tmpName, $this->storage[$file]['content']);
+            file_put_contents($tmpFile, $this->storage[$file]['content']);
         }
 
-        return $tmpName;
+        return $tmpFile;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function exists($file)
+    public
+    function exists($file)
     {
         return isset($this->storage[$file]);
     }

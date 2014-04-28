@@ -241,17 +241,16 @@ class RemoteHostStorage implements StorageInterface
     /**
      * {@inheritDoc}
      */
-    public function getPhotoResource($file)
+    public function getPhotoResource($file, $tmpFile)
     {
-        $tmpName = tempnam(sys_get_temp_dir(), 'temp');
         ftp_get(
             $this->connection(),
-            $tmpName,
+            $tmpFile,
             $this->normalizePath($file, true),
             FTP_ASCII
         );
 
-        return $tmpName;
+        return $tmpFile;
     }
 
     /**
