@@ -17,7 +17,7 @@ foreach ($statement->fetchAll(PDO::FETCH_ASSOC) as $photo) {
 // Get a photo, resize + rotate it...
 $resizePhoto = $simplePhoto->get(1, array(
     'transform' => array(
-        'size' => array(100, 100),
+        'resize' => array(100, 100),
         'rotate' => array(180)
     )
 ));

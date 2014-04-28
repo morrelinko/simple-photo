@@ -183,7 +183,7 @@ class LocalStorageTest extends \PHPUnit_Framework_TestCase
     public function testGetPhotoResource()
     {
         $storage = $this->createStorage($this->createBaseUrlImpl());
-        $tmpFile = $storage->getPhotoResource('test/photo.png');
+        $tmpFile = $storage->getPhotoResource('test/photo.png', tempnam(__DIR__ . '/../files/tmp/', 'sp'));
         $this->assertFileExists($tmpFile);
 
         @unlink($tmpFile);

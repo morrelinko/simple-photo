@@ -31,12 +31,14 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->storageManager->add('storage_avatars', new MemoryStorage());
         $this->storageManager->add('mock_storage', \Mockery::mock('SimplePhoto\Storage\MemoryStorage'));
 
-        $this->simplePhoto = new SimplePhoto($this->storageManager, $this->dataStore);
+        $this->simplePhoto = new SimplePhoto($this->storageManager, $this->dataStore, array(
+            'tmp_dir' => __DIR__ . '/../files/tmp'
+        ));
 
         $_FILES['photo'] = array(
             'name' => 'photo.png',
             'type' => 'image/png',
-            'tmp_name' => __DIR__ . '/../files/tmp/sample.png',
+            'tmp_name' => __DIR__ . '/../files/sample/sample.png',
             'error' => UPLOAD_ERR_OK,
             'size' => 4892
         );
@@ -153,23 +155,23 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotNull($photo->originalFilePath());
 
-        list($origWidth, $origHeight) = getimagesize(__DIR__ . '/../files/tmp/sample.png');
+        list($origWidth, $origHeight) = getimagesize(__DIR__ . '/../files/sample/sample.png');
 
         $memory = $this->simplePhoto->getStorageManager()->get('storage_photo');
-        $originalTmpFile = $memory->getPhotoResource($photo->originalFilePath());
-        $modifiedTmpFile = $memory->getPhotoResource($photo->filePath());
+        $tmpFile = tempnam($this->simplePhoto->getOption('tmp_dir'), 'sp');
+        $originalTmpFile = $memory->getPhotoResource($photo->originalFilePath(), $tmpFile);
+        $modifiedTmpFile = $memory->getPhotoResource($photo->filePath(), $tmpFile);
 
         list($width, $height) = getimagesize($originalTmpFile);
         list($newWidth, $newHeight) = getimagesize($modifiedTmpFile);
-
         $this->assertGreaterThan(100, $origHeight);
         $this->assertGreaterThan(100, $origWidth);
 
         $this->assertTrue($origWidth > $newWidth);
         $this->assertTrue($origHeight > $newHeight);
 
-        $this->assertEquals($origWidth, $width);
-        $this->assertEquals($origHeight, $height);
+        $this->assertEquals(50, $newWidth);
+        $this->assertEquals(50, $newHeight);
 
         @unlink($originalTmpFile);
         @unlink($modifiedTmpFile);

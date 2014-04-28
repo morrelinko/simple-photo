@@ -124,11 +124,23 @@ class SimplePhoto
         $this->transformer = $transformer;
     }
 
+    /**
+     * @param $options
+     */
     public function setOptions($options)
     {
         $this->options = array_merge(array(
             'tmp_dir' => sys_get_temp_dir()
         ), $options);
+    }
+
+    /**
+     * @param $option
+     * @return mixed
+     */
+    public function getOption($option)
+    {
+        return $this->options[$option];
     }
 
     /**
@@ -191,7 +203,7 @@ class SimplePhoto
      */
     public function upload(PhotoSourceInterface $photoSource, array $options = array())
     {
-        $photoSource->process();
+        $photoSource->process($this->options);
         if ($photoSource->isValid() == false) {
             // No need to go further if source is invalid
             return false;

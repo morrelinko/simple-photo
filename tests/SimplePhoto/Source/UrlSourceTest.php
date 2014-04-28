@@ -76,7 +76,7 @@ class UrlSourceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->source = new UrlSource('http://example.com/files/photo.png');
-        $this->source->process();
+        $this->source->process(array('tmp_dir' => __DIR__ . '/../files/tmp'));
     }
 
     public function testGetSourceAttributes()
@@ -89,7 +89,7 @@ class UrlSourceTest extends \PHPUnit_Framework_TestCase
     public function testSourceValidation()
     {
         $anotherSource = new UrlSource('http://fail.example.com/files/photo.png');
-        $anotherSource->process();
+        $anotherSource->process(array('tmp_dir' => __DIR__ . '/../files/tmp'));
 
         $this->assertFalse($anotherSource->isValid());
         $this->assertTrue($this->source->isValid());

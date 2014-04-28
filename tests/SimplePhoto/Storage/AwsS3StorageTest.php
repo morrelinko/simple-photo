@@ -66,7 +66,9 @@ class AwsS3StorageTest extends \PHPUnit_Framework_TestCase
         $client->shouldReceive('getObject')->once()->andReturn(true);
         $storage = $this->createStorage($client);
 
-        $this->assertFileExists($storage->getPhotoResource('photo.png'));
+        $this->assertFileExists(
+            $storage->getPhotoResource('photo.png', tempnam(__DIR__ . '/../files/tmp/', 'sp'))
+        );
     }
 
     public function testExists()
