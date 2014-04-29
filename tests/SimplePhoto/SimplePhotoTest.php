@@ -127,13 +127,14 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
     {
         $id = $this->uploadPhoto();
         $photo = $this->simplePhoto->get($id);
+        $origFileSize = filesize(__DIR__ . '/../files/sample/sample.png');
 
         $this->assertInstanceOf('SimplePhoto\\PhotoResult', $photo);
         $this->assertEquals($id, $photo->id());
         $this->assertEquals('photo.png', $photo->fileName());
         $this->assertEquals('png', $photo->fileExtension());
         $this->assertEquals('image/png', $photo->fileMime());
-        $this->assertEquals(4892, $photo->fileSize());
+        $this->assertEquals($origFileSize, $photo->fileSize());
         $this->assertEquals('storage_photo', $photo->storage());
         $this->assertEquals($photo->createdAt(), $photo->updatedAt());
         $this->assertNull($photo->originalFilePath());
@@ -162,7 +163,6 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $originalTmpFile = $memory->getPhotoResource($photo->originalFilePath(), $tmpFile);
         $modifiedTmpFile = $memory->getPhotoResource($photo->filePath(), $tmpFile);
 
-        list($width, $height) = getimagesize($originalTmpFile);
         list($newWidth, $newHeight) = getimagesize($modifiedTmpFile);
         $this->assertGreaterThan(100, $origHeight);
         $this->assertGreaterThan(100, $origWidth);
@@ -170,8 +170,8 @@ class SimplePhotoTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($origWidth > $newWidth);
         $this->assertTrue($origHeight > $newHeight);
 
-        $this->assertEquals(50, $newWidth);
-        $this->assertEquals(50, $newHeight);
+        $this->assertLessThanOrEqual(50, $newWidth);
+        $this->assertLessThanOrEqual(50, $newHeight);
 
         @unlink($originalTmpFile);
         @unlink($modifiedTmpFile);

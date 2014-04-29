@@ -93,7 +93,15 @@ class AwsS3StorageTest extends \PHPUnit_Framework_TestCase
 
     protected function getClient()
     {
-        return Mockery::mock('Aws\S3\S3Client');
+        $credentials = $this->getMock('Aws\Common\Credentials\CredentialsInterface');
+        $signature = $this->getMock('Aws\Common\Signature\SignatureInterface');
+        $client = $this->getMock('Guzzle\Common\Collection');
+
+        return Mockery::mock('Aws\S3\S3Client[putObject,copyObject,getAll,deleteObject,deleteMatchingObjects,getIterator,putObjectAcl,getAll,getObjectAcl,doesObjectExist,GetObject,getObjectUrl,registerStreamWrapper]', array(
+            $credentials,
+            $signature,
+            $client,
+        ));
     }
 
     public function tearDown()
