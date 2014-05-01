@@ -404,7 +404,7 @@ class SimplePhoto
      * </pre>
      * @return bool|PhotoResult
      */
-    public function build(array $photo, array $options = array())
+    public function build($photo, array $options = array())
     {
         $options = array_merge(array(
             'transform' => array(),
