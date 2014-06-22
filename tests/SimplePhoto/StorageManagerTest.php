@@ -84,4 +84,9 @@ class StorageManagerTest extends \PHPUnit_Framework_TestCase
         $this->storageManager->remove('mock_storage');
         $this->assertFalse($this->storageManager->has('mock_storage'));
     }
+
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
 }

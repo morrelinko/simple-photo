@@ -1,6 +1,7 @@
 SimplePhoto
 ---------------------
-Photo uploading and management made easy.
+
+Handling photos in your web application has never been so *simple*.
 
 [![Build Status](https://travis-ci.org/morrelinko/simple-photo.png?branch=master)](https://travis-ci.org/morrelinko/simple-photo)
 
@@ -35,7 +36,7 @@ With support for accepting uploads from different sources.
 $photoId = $simplePhoto->upload(new YourUploadSource($imageData));
 ```
 
-The two upload methods shown above actually are just like aliases/shortcuts for doing this
+The two upload methods shown above actually are aliases/shortcuts for doing this
 
 ```php
 $photoId = $simplePhoto->upload(new PhpFileUploadSource($_FILES["image"]));
@@ -186,23 +187,23 @@ var_dump($users);
 
 ## Supported Photo Sources
 
-* [FilePath Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/FilePathSource.php)
-* [PhpFileUpload Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/PhpFileUploadSource.php)
-* [Url Source](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/UrlSource.php)
-* [SymfonyFileUploadSource](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Source/SymfonyFileUploadSource.php)
+* [FilePath Source](https://github.com/morrelinko/simple-photo/blob/develop/src/Source/FilePathSource.php)
+* [PhpFileUpload Source](https://github.com/morrelinko/simple-photo/blob/develop/src/Source/PhpFileUploadSource.php)
+* [Url Source](https://github.com/morrelinko/simple-photo/blob/develop/src/Source/UrlSource.php)
+* [SymfonyFileUploadSource](https://github.com/morrelinko/simple-photo/blob/develop/src/Source/SymfonyFileUploadSource.php)
 
 ## Supported Data Stores
 
-* [MySql Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/DataStore/MySqlDataStore.php)
-* [Sqlite Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/DataStore/SqliteDataStore.php)
-* [Memory Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/DataStore/MemoryDataStore.php)
+* [MySql Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/DataStore/MySqlDataStore.php)
+* [Sqlite Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/DataStore/SqliteDataStore.php)
+* [Memory Data Store](https://github.com/morrelinko/simple-photo/blob/develop/src/DataStore/MemoryDataStore.php)
 
 ## Supported Storage
 
-* [Local Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/LocalStorage.php)
-* [Remote Host Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/RemoteHostStorage.php)
-* [Memory Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/MemoryStorage.php)
-* [AwsS3 Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/SimplePhoto/Storage/AwsS3Storage.php)
+* [Local Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/Storage/LocalStorage.php)
+* [Remote Host Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/Storage/RemoteHostStorage.php)
+* [Memory Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/Storage/MemoryStorage.php)
+* [AwsS3 Storage](https://github.com/morrelinko/simple-photo/blob/develop/src/Storage/AwsS3Storage.php)
 
 ## TODO
 

@@ -85,11 +85,11 @@ $data = array(
     'cover_photo_id' => 2
 );
 
-$simplePhoto->push($data, array('photo_id', 'cover_photo_id'), function (&$item, PhotoResult $photo, $index, $name) {
-    if ($index == 'photo_id') {
+$simplePhoto->push($data, array('photo_id', 'cover_photo_id'), function (&$item, PhotoResult $photo, $key, $find) {
+    if ($find == 'photo_id') {
         // Adds an element to the array 'photo_url' => 'http://xxxxxxxxxxxx'
         $item['photo_url'] = $photo->url();
-    } else if ($index == 'cover_photo_id') {
+    } else if ($find == 'cover_photo_id') {
         // Adds an element to the array 'cover_photo_url' => 'http://xxxxxxxxxxxx'
         $item['cover_photo_url'] = $photo->url();
     }

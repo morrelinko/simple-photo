@@ -1,6 +1,7 @@
 {
     "name": "morrelinko/simple-photo",
     "description": "Photo uploading and management made easy.",
+    "keywords": ["photo", "simple-photo", "upload", "storage", "image", "transform"],
     "license": "MIT",
     "authors": [
         {
@@ -22,6 +23,7 @@
     },
     "require-dev": {
         "aws/aws-sdk-php": "~2",
-        "mockery/mockery": "dev-master@dev"
+        "mockery/mockery": "dev-master@dev",
+        "phpunit/phpunit": "~4.0"
     }
 }

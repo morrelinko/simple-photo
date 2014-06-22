@@ -28,7 +28,7 @@ class PhpFileUploadSource implements PhotoSourceInterface
     /**
      * {@inheritDoc}
      */
-    public function process()
+    public function process(array $options = array())
     {
         return $this;
     }

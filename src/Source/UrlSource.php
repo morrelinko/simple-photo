@@ -49,10 +49,10 @@ class UrlSource implements PhotoSourceInterface
     /**
      * {@inheritDoc}
      */
-    public function process()
+    public function process(array $options = array())
     {
         $this->name = basename($this->url);
-        $this->path = tempnam(sys_get_temp_dir(), 'spu');
+        $this->path = tempnam($options['tmp_dir'], 'sp');
         $fp = fopen($this->path, 'w+');
 
         $ch = curl_init($this->url);

@@ -104,14 +104,13 @@ class AwsS3Storage implements StorageInterface
     /**
      * {@inheritDoc}
      */
-    public function getPhotoResource($file)
+    public function getPhotoResource($file, $tmpFile)
     {
-        $tmpName = tempnam(sys_get_temp_dir(), 'temp');
         $this->client->getObject($this->getOptions($file), array(
-            'SaveAs' => $tmpName
+            'SaveAs' => $tmpFile
         ));
 
-        return $tmpName;
+        return $tmpFile;
     }
 
     /**

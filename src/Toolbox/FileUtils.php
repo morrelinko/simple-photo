@@ -84,11 +84,12 @@ class FileUtils
 
     /**
      * @param string $file
+     * @param string|null $dir
      * @return string
      */
-    public static function createTempFile($file)
+    public static function createTempFile($file, $dir = null)
     {
-        $tmpFile = tempnam(sys_get_temp_dir(), 'up');
+        $tmpFile = tempnam($dir ? $dir : sys_get_temp_dir(), 'sp');
         copy($file, $tmpFile);
 
         return $tmpFile;

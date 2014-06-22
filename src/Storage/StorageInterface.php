@@ -54,9 +54,10 @@ interface StorageInterface
 
     /**
      * @param string $file
+     * @param string $tmpFile temp file photo is saved locally during manipulation
      * @return mixed
      */
-    public function getPhotoResource($file);
+    public function getPhotoResource($file, $tmpFile);
 
     /**
      * Checks if photo exists

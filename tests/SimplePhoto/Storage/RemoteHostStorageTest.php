@@ -109,7 +109,7 @@ class RemoteHostStorageTest extends \PHPUnit_Framework_TestCase
 
     public function testGetPhotoResource()
     {
-        $tmpName = $this->storage->getPhotoResource('files/photo.png');
+        $tmpName = $this->storage->getPhotoResource('files/photo.png', tempnam(__DIR__ . '/../files/tmp/', 'sp'));
         $this->assertFileExists($tmpName);
         $this->assertSame('contents', file_get_contents($tmpName));
         unlink($tmpName);

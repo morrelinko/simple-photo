@@ -21,7 +21,7 @@ interface PhotoSourceInterface
      *
      * @return PhotoSourceInterface
      */
-    public function process();
+    public function process(array $options = array());
 
     /**
      * Name of file

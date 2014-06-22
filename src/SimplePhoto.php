@@ -54,10 +54,12 @@ class SimplePhoto
      *
      * @param StorageManager $storageManager
      * @param DataStoreInterface $dataStore
+     * @param array $options
      */
     public function __construct(
         StorageManager $storageManager = null,
-        DataStoreInterface $dataStore = null
+        DataStoreInterface $dataStore = null,
+        array $options = array()
     ) {
         if ($storageManager != null) {
             $this->setStorageManager($storageManager);
@@ -66,6 +68,8 @@ class SimplePhoto
         if ($dataStore != null) {
             $this->setDataStore($dataStore);
         }
+
+        $this->setOptions($options);
     }
 
     /**
@@ -118,6 +122,25 @@ class SimplePhoto
     public function setTransformer(TransformerInterface $transformer)
     {
         $this->transformer = $transformer;
+    }
+
+    /**
+     * @param $options
+     */
+    public function setOptions($options)
+    {
+        $this->options = array_merge(array(
+            'tmp_dir' => sys_get_temp_dir()
+        ), $options);
+    }
+
+    /**
+     * @param $option
+     * @return mixed
+     */
+    public function getOption($option)
+    {
+        return $this->options[$option];
     }
 
     /**
@@ -180,7 +203,7 @@ class SimplePhoto
      */
     public function upload(PhotoSourceInterface $photoSource, array $options = array())
     {
-        $photoSource->process();
+        $photoSource->process($this->options);
         if ($photoSource->isValid() == false) {
             // No need to go further if source is invalid
             return false;
@@ -201,7 +224,10 @@ class SimplePhoto
             // as the original image
             list($uploadPath, $fileSize) = $this->transformPhoto(
                 $storage,
-                FileUtils::createTempFile($photoSource->getFile()),
+                FileUtils::createTempFile(
+                    $photoSource->getFile(),
+                    $this->options['tmp_dir']
+                ),
                 $saveName,
                 $fileMime,
                 $options['transform']
@@ -378,7 +404,7 @@ class SimplePhoto
      * </pre>
      * @return bool|PhotoResult
      */
-    public function build(array $photo, array $options = array())
+    public function build($photo, array $options = array())
     {
         $options = array_merge(array(
             'transform' => array(),
@@ -426,7 +452,10 @@ class SimplePhoto
                 // (ie if file does not exists)
                 list($modifiedFileName, $info['file_size']) = $this->transformPhoto(
                     $storage,
-                    $storage->getPhotoResource($photoResult->originalFilePath()),
+                    $storage->getPhotoResource(
+                        $photoResult->originalFilePath(),
+                        tempnam($this->options['tmp_dir'], 'sp')
+                    ),
                     $modifiedFileName,
                     $photo['file_mime'],
                     $options['transform']
@@ -452,7 +481,7 @@ class SimplePhoto
      * @param array $transform
      * @return string|bool Modified file if successful or false otherwise
      */
-    private function transformPhoto(
+    protected function transformPhoto(
         StorageInterface $storage,
         $tmpFile,
         $modifiedFile,
@@ -482,7 +511,7 @@ class SimplePhoto
      * @param string $file
      * @return string
      */
-    private function generateOriginalSaveName($file)
+    protected function generateOriginalSaveName($file)
     {
         $fileName = uniqid(time() . substr(str_shuffle('abcdefABCDEF012345'), 0, 8));
         $extension = pathinfo($file, PATHINFO_EXTENSION);
@@ -496,7 +525,7 @@ class SimplePhoto
      * @param array $transform
      * @return string
      */
-    private function generateModifiedSaveName($oldName, $transform)
+    protected function generateModifiedSaveName($oldName, $transform)
     {
         $name = $this->getTransformer()->generateName($transform);
         // Extract information from original file
