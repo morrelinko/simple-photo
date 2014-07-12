@@ -19,10 +19,11 @@
     },
     "require": {
         "php": ">=5.3.0",
-        "imagine/imagine": "~0.5.0"
+        "imagine/imagine": "~0.5"
     },
     "require-dev": {
         "aws/aws-sdk-php": "~2",
+        "lstrojny/fxmlrpc": "dev-master",
         "mockery/mockery": "dev-master@dev",
         "phpunit/phpunit": "~4.0"
     }
